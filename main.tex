@@ -117,7 +117,7 @@
 \end{columns}
 \vspace{0.18cm}
 \begin{alertblock}{Why human intention should be modeled}
-The same table state can lead to different valid routes, rotations, and leader--follower roles. Without predicting the human's choice, the robot may resist the human, apply conflicting forces, or react too late.
+The same table state can lead to different valid routes, rotations, and leader--follower roles. Without predicting the human's choice, the robot may resist the human, apply conflicting forces, or react too late. \pinkcomment{ should mention the copolicy consider the policy generation as a black box which is not explainable? a bloacked human intention, intention response oriented control could be better?}
 \end{alertblock}
 \end{frame}
 
@@ -169,6 +169,8 @@ $h_t$: recent interaction history up to time $t$; $c$: task context, including g
 $p(a\mid b)$: distribution of $a$ given $b$; $\psi$: learned model parameters; $*$: desired or latent quantity; $\dot{x}$: time derivative of $x$. PACE means Peer-Aware Cost Estimation; N-PACE is its nonlinear extension.
 \end{block}
 \end{columns}
+
+\pinkcomment{Put this page to backup}
 \end{frame}
 
 \begin{frame}{A useful model must resolve four uncertainties}
@@ -248,6 +250,7 @@ Human-intended vector field $f_H(x^O;\theta_H)$ over object motion; $\theta_H$ d
 Human wrench/action responses conditioned on candidate robot actions.
 \end{block}
 \end{columns}
+\pinkcomment{As for human action response prediction for should the previous three options all take this account in their own model?}
 \end{frame}
 
 \begin{frame}{How the intention representations will be evaluated}
@@ -465,6 +468,8 @@ $R_O$: current orientation; $R_H^*$: inferred target orientation; $\omega_O^{H,*
 \begin{alertblock}{Difference from Options A and B}
 Option A models a horizon cost, and Option B predicts a full desired path. Option C predicts the desired velocity at the current state, so it is lighter online but less expressive about long-term tradeoffs.
 \end{alertblock}
+
+\pinkcomment{why only consider rotation? should we consider a more general case?}
 \end{frame}
 
 \begin{frame}{Option C: Training and online inference}
@@ -544,6 +549,7 @@ p_\psi(u_{t:t+H}^H\mid h_t,c,\tilde u_{t:t+H}^R,z_H)
 \begin{alertblock}{Tradeoff}
 The response model supports counterfactual planning, but needs diverse robot-action coverage and calibrated out-of-distribution uncertainty.
 \end{alertblock}
+\pinkcomment{This looks like NPACE? as NPACE looks also consider how human accmondate the robot behaviors}
 \end{frame}
 
 \begin{frame}[shrink=4]{Each representation serves a different modeling layer}
@@ -605,7 +611,7 @@ Current primitive, desired motion, preference weights, and person-specific respo
   \item task/interaction encoders from multi-person data;
   \item trajectory modes and residual cost features;
   \item robot-action-conditioned response model;
-  \item calibrated uncertainty on held-out people.
+  \item calibrated uncertainty on held-out people. \pinkcomment{cannot understand}
 \end{itemize}
 \end{block}
 \column{0.48\textwidth}
@@ -640,7 +646,9 @@ $y_{t+1}=(\mathbf w_t^{\mathrm{int,obs}},x_{t+1}^O)$ combines the observed wrenc
 \vspace{0.15cm}
 \begin{alertblock}{Interpretation}
 $\propto$ means: multiply the prior belief by the likelihood of the new observation, then normalize. Models that better predict the human--robot interaction receive more probability.
+
 \end{alertblock}
+\pinkcomment{consider putting this page into backup}
 \end{frame}
 
 \begin{frame}[shrink=5]{Data collection supplies weak and self-supervision}
@@ -678,7 +686,7 @@ Use accessible human--human demonstrations for pretraining, then collect human--
 Collaborative object transport with:
 \begin{itemize}
   \item two feasible paths around an obstacle;
-  \item translation--rotation tradeoffs;
+  \item translation--rotation tradeoffs; \pinkcomment{did not introduced before in the slides}
   \item changing leader/follower roles;
   \item synchronized object state and 6D interaction wrench.
 \end{itemize}

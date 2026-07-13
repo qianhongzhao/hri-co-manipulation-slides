@@ -90,7 +90,7 @@
   \vfill
   \hspace{0.78cm}{\color{navy}\normalsize\textbf{Qianhong Zhao}\par}
   \vspace{0.12cm}
-  \hspace{0.78cm}{\color{muted}\small Research Discussion with RISE Lab\par}
+  % \hspace{0.78cm}{\color{muted}\small Research Discussion with RISE Lab\par}
   \vspace{0.52cm}
   
 \end{frame}}
@@ -116,7 +116,7 @@
 \end{block}
 \end{columns}
 \vspace{0.18cm}
-\begin{alertblock}{Why human intention must be modeled}
+\begin{alertblock}{Why human intention should be modeled}
 The same table state can lead to different valid routes, rotations, and leader--follower roles. Without predicting the human's choice, the robot may resist the human, apply conflicting forces, or react too late.
 \end{alertblock}
 \end{frame}
@@ -388,6 +388,7 @@ Learn shared $\phi_\psi$ from demonstrated actions via max-entropy IOC/IRL with 
 \vspace{0.25cm}
 \begin{alertblock}{What the learned model contributes}
 It replaces task-by-task manual feature design with a reusable cost representation; N-PACE retains peer-aware online inference and interaction-aware control.
+\pinkcomment{if only option B can be used in the NPACE, form this option as Option A and make the original Option A as Option B }
 \end{alertblock}
 \end{frame}
 
@@ -405,6 +406,7 @@ For a simple attractor model:
 \]
 $\theta_H=(p_H^*,R_H^*,K_p,K_R)$ represents desired pose and response aggressiveness.
 \end{block}
+\pinkcomment{here needs more explanations， what is the meaning for each nnotation? Noboday can follow. Too much undefined notations here. what is attractor model? consider use one more page to explain.}
 \column{0.44\textwidth}
 \begin{exampleblock}{Why it is attractive}
 No assumption that the human solves a complete optimal-control problem; parameters can be updated from local motion and interaction-wrench evidence.

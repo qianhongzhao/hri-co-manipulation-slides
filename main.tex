@@ -322,6 +322,7 @@ Response-conditioned cost $J_H(u_R)$ and preference weights $w_H$.
 Response-conditioned goal, path mode, or trajectory $\xi_H^*$.
 \end{block}
 \end{columns}
+\pinkcomment{move the second arrow in the middle of the page horzontally  delete "Notation is introduced on the following slides."}
 % User question: A, B, and C look crowded horizontally. Is it better to retain only A and B in the
 % main deck and move C to backup because C is relatively vague and less connected to the shared papers?
 % Assistant response: Yes, that is the stronger meeting version. A is directly connected to the
@@ -454,6 +455,7 @@ N-PACE uses inferred costs and a dynamic game to compute bounded-rational respon
 \begin{alertblock}{Proposed combination}
 Use N-PACE for interpretable intent and peer-learning structure; use the learned response model as a population prior or residual for behavior the game model does not explain.
 \end{alertblock}
+\pinkcomment{Q: this page to backup?}
 \end{frame}
 
 \begin{frame}{Option A: Infer the human's objective}
@@ -558,7 +560,7 @@ Use a diffusion loss or a loss that keeps the best among several predictions, so
 \end{columns}
 \vspace{0.2cm}
 \begin{alertblock}{Role in the complete system}
-The desired motion is a low-level reference for shared-object model predictive control (MPC). Combine it with a primitive or preference model when the robot must explain why the human changes strategy.
+The desired motion is a low-level reference for shared-object model predictive control (MPC) \pinkcomment{or MPPI? from my understanding for estimated cost maybe sample based could be better? the optimzation of estimated cost could be not desired and even waster computation?}. Combine it with a primitive or preference model when the robot must explain why the human changes strategy.
 \end{alertblock}
 \vspace{0.12cm}
 Related: Townsend et al. (2017); Franceschi et al. (2023).

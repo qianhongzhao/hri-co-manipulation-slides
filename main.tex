@@ -3,6 +3,7 @@
 \usepackage{amsmath,amssymb,bm}
 \usepackage{booktabs}
 \usepackage{tikz}
+\usepackage{xcolor}
 \usetikzlibrary{arrows.meta,positioning,fit}
 
 \definecolor{navy}{HTML}{062B63}
@@ -84,6 +85,10 @@
   \vspace{0.12cm}
   {\color{white!72}\small Research Discussion with RISE Lab\par}
   \vspace{0.52cm}
+
+  \textcolor{pink}{1. Background color needs to be replaced to some light color. Do not includ too much blue;
+  2. The origin line breaks the title. Use another method to underline the title
+  }
 \end{frame}}
 
 \begin{frame}[shrink=6]{Co-manipulation requires coordination through human uncertainty}
@@ -104,20 +109,23 @@
 
   \column{0.44\textwidth}
   \begin{alertblock}{Central research question}
-  How can the robot model the human well enough to support real-time planning and control?
+  How can the robot model the human well enough to support real-time planning and control? \textcolor{pink}{How to model the human well enough to support real-time planning and control of robot in comipulation tasks? }
   \end{alertblock}
   \vspace{0.25cm}
   \begin{exampleblock}{Desired outcome}
   An explicit human model that is predictive, interactive, uncertainty-aware, and adaptable online.
   \end{exampleblock}
 \end{columns}
+
+\textcolor{pink}{1. why explicit human model? if we introduce the complex models for the features of the potential cost functions, how can this model be explicit?
+2. current title needs to be modified. the title looks not complete}
 \end{frame}
 
 \begin{frame}{Human behavior is structured, adaptive, and bounded-rational}
 \begin{columns}[T,onlytextwidth]
 \column{0.48\textwidth}
 \begin{itemize}
-  \item \key{Multimodal}: multiple strategies may be reasonable in the same situation.
+  \item \key{Multimodal}: multiple strategies may be reasonable in the same situation. \textcolor{pink}{ Should multimodal be the  different data types input for the model}
   \item \key{Interactive}: behavior depends on what the robot does.
   \item \key{Bounded-rational}: people may be delayed, inconsistent, or effort-limited.
 \end{itemize}
@@ -130,7 +138,7 @@
 \end{columns}
 \vspace{0.35cm}
 \begin{block}{Implication}
-A useful model must distinguish human intent, interaction style, adaptation, and action uncertainty---without requiring a separate model for every task.
+A useful model must distinguish human intent, interaction style, adaptation, and action uncertainty---without requiring a separate model for every task. 
 \end{block}
 \end{frame}
 
@@ -140,7 +148,23 @@ A useful model must distinguish human intent, interaction style, adaptation, and
 \column{0.315\textwidth}
 \begin{block}{Diffusion Co-Policy}
 \begin{itemize}
-  \item Learns multimodal collaborative action sequences
+  \item Learns multimodal collaborative action sequences \textcolor{pink}{1. looks the input of this paper is "人的输入 a
+t
+H
+	​
+
+：二维力，2D
+机器人的输入 a
+t
+R
+	​
+
+：二维力，2D
+联合系统输入 a
+t
+	​
+
+：四维，4D", why you say multimodal.? 2. mention this paper offers the desired test setting for the projects} 
   \item Demonstrates mutual adaptation and role switching
   \item Works with real humans in collaborative carrying
 \end{itemize}
@@ -149,9 +173,11 @@ A useful model must distinguish human intent, interaction style, adaptation, and
 \begin{block}{Bounded-Rational Model}
 \begin{itemize}
   \item Models human joint action game-theoretically
-  \item Fits behavior better with bounded rationality
+  \item Fits behavior better with bounded rationality 
   \item Reveals leadership and adaptation effects
 \end{itemize}
+
+\textcolor{pink}{Here needs to mention that this paper convince people that human intention could be modeled through gametheory}
 \end{block}
 \column{0.315\textwidth}
 \begin{block}{PACE / N-PACE}
@@ -160,11 +186,12 @@ A useful model must distinguish human intent, interaction style, adaptation, and
   \item Treats the peer as another adapting learner
   \item Connects inference with interaction policies
 \end{itemize}
+\textcolor{pink}{Here needs to mention that this paper convince people that the comanipulation problem could be solved or solved better based on gametheory and reasonable human inention model}
 \end{block}
 \end{columns}
 \vspace{0.28cm}
 \begin{alertblock}{Combined insight}
-Learned models provide behavioral flexibility; game-theoretic models provide structure, interpretability, and a connection to control.
+Learned models provide behavioral flexibility; game-theoretic models provide structure, interpretability, and a connection to control. 
 \end{alertblock}
 \end{frame}
 
@@ -220,6 +247,8 @@ p_\psi\!\left(u^H_{t:t+H},z^H_{t+1}\mid h_t,c,u^R_{t:t+H}\right)
   \item $c$: task goal, object properties, geometry, contacts, and constraints
   \item $u^R_{t:t+H}$: candidate robot actions; $z^H$: latent human state
 \end{itemize}
+
+\textcolor{pink}{ Each notation like $z^H$ etc. needs to be explained more, considered use some examples}
 \end{frame}
 
 \begin{frame}{A hybrid architecture keeps the human model explicit}
@@ -246,11 +275,13 @@ p_\psi\!\left(u^H_{t:t+H},z^H_{t+1}\mid h_t,c,u^R_{t:t+H}\right)
 \draw[arr] (dist)--(plan);
 \draw[arr,bend left=22] (plan.south) to (obs.south);
 \end{tikzpicture}
-}
+}\textcolor{pink}{the bottom arrow line covered one block encircled in orange line}
 \vspace{0.3cm}
 \begin{block}{Design principle}
 The structured component explains behavior; the learned component captures multimodality and model mismatch; online adaptation personalizes both to the current human.
 \end{block}
+
+
 \end{frame}
 
 \begin{frame}{SP1: Build the physical evidence base}
@@ -278,6 +309,107 @@ The structured component explains behavior; the learned component captures multi
 \end{columns}
 \vspace{0.18cm}
 \paperout{A multimodal benchmark and systematic study of force/torque for human intent inference.}
+
+\textcolor{pink}{this page is too vague. what is the reasonable human intension model Output? cost function features? desired object trajectories? Or "把 intention 表示成一个动态系统或 vector field
+
+不估计 cost，而是假设 human 希望物体服从某个局部动力系统：
+
+x
+˙
+O
+	​
+
+=f
+H
+	​
+
+(x
+O
+	​
+
+;θ
+H
+	​
+
+)
+
+例如一个简单的 attractor model：
+
+p
+˙
+	​
+
+O
+	​
+
+=K
+p
+	​
+
+(p
+H
+∗
+	​
+
+−p
+O
+	​
+
+)
+R
+˙
+O
+	​
+
+=f
+R
+	​
+
+(R
+O
+	​
+
+,R
+H
+∗
+	​
+
+)
+
+这里 human intent 就是：
+
+θ
+H
+	​
+
+=(p
+H
+∗
+	​
+
+,R
+H
+∗
+	​
+
+,K
+p
+	​
+
+,K
+R
+	​
+
+)
+
+分别表示：
+
+期望物体位置；
+期望姿态；
+平移和旋转的积极程度。
+
+这样就不需要假设 human 在解一个完整 optimal control problem。robot 只要根据最近的 object motion、human wrench 和 tracking error 在线估计 DS 参数。" ?
+} 
 \end{frame}
 
 \begin{frame}[shrink=6]{SP2: Make intent and preference explicit}

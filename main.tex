@@ -118,6 +118,13 @@
 \vspace{0.18cm}
 \begin{alertblock}{Why human intention should be modeled}
 The same table state can lead to different valid routes, rotations, and leader--follower roles. Without predicting the human's choice, the robot may resist the human, apply conflicting forces, or react too late. \pinkcomment{ should mention the copolicy consider the policy generation as a black box which is not explainable? a bloacked human intention, intention response oriented control could be better?}
+% Response: Yes. Diffusion Co-Policy learns a joint human--robot action distribution directly
+% from demonstrations, so human intention is implicit inside a black-box policy and is not
+% separately identifiable or interpretable. An intention/response-oriented architecture can be
+% preferable when we need explanation, candidate-action evaluation, or model-based safety.
+% It is not automatically more accurate: an explicit model may add modeling error and requires
+% diverse robot-action data. The strongest proposal is a hybrid: explicit control-relevant intent
+% variables plus a learned response model for behavior the structured model does not capture.
 \end{alertblock}
 \end{frame}
 
@@ -171,6 +178,9 @@ $p(a\mid b)$: distribution of $a$ given $b$; $\psi$: learned model parameters; $
 \end{columns}
 
 \pinkcomment{Put this page to backup}
+% Response: Agreed. This notation-summary page can be moved to the backup because it interrupts
+% the main narrative. If it is moved, every formula in the main deck must retain short local
+% definitions immediately below it so each symbol is defined before or at its first use.
 \end{frame}
 
 \begin{frame}{A useful model must resolve four uncertainties}
@@ -251,6 +261,12 @@ Human wrench/action responses conditioned on candidate robot actions.
 \end{block}
 \end{columns}
 \pinkcomment{As for human action response prediction for should the previous three options all take this account in their own model?}
+% Response: Ideally yes. Human behavior is closed-loop, so Options A--C should account for the
+% robot action being considered. Option A already includes u^R in the cost and becomes
+% response-aware when solved as a dynamic game. Option B can be extended to
+% p(xi_H^* | h_t,c,tilde u^R), and Option C to f_H(x_O,c,tilde u^R;theta_H).
+% Option D is best viewed as a general response-model layer around these structured intent
+% representations, not as an independent intent variable at the same level.
 \end{frame}
 
 \begin{frame}{How the intention representations will be evaluated}
@@ -470,6 +486,11 @@ Option A models a horizon cost, and Option B predicts a full desired path. Optio
 \end{alertblock}
 
 \pinkcomment{why only consider rotation? should we consider a more general case?}
+% Response: We should consider the full rigid-object pose, not rotation alone. The first equation
+% dot{x}_O^{H,*}=f_H(x_O,c;theta_H) is the general state-space model and can include translation,
+% rotation, linear/angular velocity, and other object states. Rotation is shown separately because
+% orientation lies on SO(3) and is not handled by ordinary Euclidean subtraction like position.
+% A clearer revision would present an SE(3) pose model with position and orientation components.
 \end{frame}
 
 \begin{frame}{Option C: Training and online inference}
@@ -550,6 +571,12 @@ p_\psi(u_{t:t+H}^H\mid h_t,c,\tilde u_{t:t+H}^R,z_H)
 The response model supports counterfactual planning, but needs diverse robot-action coverage and calibrated out-of-distribution uncertainty.
 \end{alertblock}
 \pinkcomment{This looks like NPACE? as NPACE looks also consider how human accmondate the robot behaviors}
+% Response: They share the closed-loop idea but are not the same model. N-PACE is structured and
+% game-theoretic: it assumes parameterized costs/policies, estimates peer cost parameters online,
+% and models how the peer updates its belief about the robot. Option D is a data-driven predictor
+% p(u^H | history, context, candidate u^R); it can predict accommodation without identifying a
+% cost or specifying a human learning law. They can be combined: N-PACE supplies interpretable
+% intent/learning structure, while Option D supplies a learned prior or residual response model.
 \end{frame}
 
 \begin{frame}[shrink=4]{Each representation serves a different modeling layer}
@@ -612,6 +639,10 @@ Current primitive, desired motion, preference weights, and person-specific respo
   \item trajectory modes and residual cost features;
   \item robot-action-conditioned response model;
   \item calibrated uncertainty on held-out people. \pinkcomment{cannot understand}
+  % Response: This means the model's confidence should be tested on participants not used for
+  % training. If it reports an 80 percent prediction region, the true action should fall inside it
+  % about 80 percent of the time for unseen people. A clearer visible phrase is:
+  % ``uncertainty estimates validated on unseen participants.''
 \end{itemize}
 \end{block}
 \column{0.48\textwidth}
@@ -649,6 +680,10 @@ $\propto$ means: multiply the prior belief by the likelihood of the new observat
 
 \end{alertblock}
 \pinkcomment{consider putting this page into backup}
+% Response: Agreed. The Bayesian equation is implementation detail and can be moved to backup.
+% The main deck only needs the message that a population prior is updated online from observed
+% wrench and object motion. The equation remains useful if he asks how personalization is
+% implemented mathematically.
 \end{frame}
 
 \begin{frame}[shrink=5]{Data collection supplies weak and self-supervision}
@@ -687,6 +722,10 @@ Collaborative object transport with:
 \begin{itemize}
   \item two feasible paths around an obstacle;
   \item translation--rotation tradeoffs; \pinkcomment{did not introduced before in the slides}
+  % Response: Correct. Earlier slides mention coordinated translation and rotation but do not
+  % explain a tradeoff. One route may require shorter translation but larger table rotation, while
+  % another may be longer but require less rotation. Either explain this on the reference-task
+  % slide or replace the bullet with ``coordinated translation and rotation around obstacles.''
   \item changing leader/follower roles;
   \item synchronized object state and 6D interaction wrench.
 \end{itemize}

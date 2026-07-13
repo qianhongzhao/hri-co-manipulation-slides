@@ -163,8 +163,20 @@
   
 \end{frame}}
 
-\begin{frame}{Frame Title}
-    \pinkcomment{Add one page to show the contents of today, including (problem definitions), (take away from shared papers), (proposed framework), ( details to push the projects) you have the freedom to consider the most proper wordings of each block}
+\begin{frame}{Discussion roadmap}
+\begin{enumerate}
+  \item \textbf{Problem definition}\par
+  What must a control-relevant human model predict in physical co-manipulation?
+  \vspace{0.18cm}
+  \item \textbf{Lessons from the shared papers}\par
+  What Diffusion Co-Policy, bounded-rational games, and PACE/N-PACE already establish---and what remains open.
+  \vspace{0.18cm}
+  \item \textbf{Proposed framework}\par
+  A reusable intention representation plus robot-action-conditioned human response prediction.
+  \vspace{0.18cm}
+  \item \textbf{Path to a testable project}\par
+  Candidate model realizations, data collection, evaluation, and a focused first study.
+\end{enumerate}
 \end{frame}
 
 \begin{frame}{Reference task: Collaborative table carrying}
@@ -192,7 +204,16 @@
 Diffusion Co-Policy maps history to joint actions, leaving intention implicit. An explicit model exposes intent, tests candidate robot actions, and connects prediction to planning and safety. A hybrid preserves learned flexibility.
 \end{alertblock}
 
-\pinkcomment{Question: I have a question, what if the  historical data not available? pure rely on online adaptation? what should the behaviors of the robot during the initial stage of online adaptation? you may use comment to answer}
+% User question: What if historical interaction data are unavailable? Should the method rely purely
+% on online adaptation, and how should the robot behave during the initial adaptation stage?
+% Assistant response: Distinguish a new-user cold start from having no offline dataset at all. For a
+% new user, initialize the human model from a population/physics prior and adapt only compact latent
+% variables online. The robot should initially use a conservative low-gain impedance or compliant
+% controller, bounded speed/force, and a safety filter. It can apply small information-seeking actions
+% only when they remain safe, then increase assistance as posterior confidence grows. If no offline
+% human data exist, training a large response model purely online is neither data-efficient nor safely
+% identifiable. Start instead from a structured dynamics/game prior and a safe default controller,
+% collect data, and learn the richer population model across later interactions.
 \end{frame}
 
 \begin{frame}{Human intention is hidden but control-relevant}
@@ -278,16 +299,18 @@ Human intention is modelable and useful for control; the unresolved question is 
 \end{frame}
 
 \begin{frame}{A response-conditioned hierarchy for human intention}
-\begin{block}{High-level layer: interaction primitive}
+\begin{block}{Core contribution 1: Reusable interaction primitive}
 Output: $z_H=(m,g,v,\rho)$, describing the current phase, local goal, speed/force level, and interaction role.
 \end{block}
 \centering\textcolor{orange}{\Large$\Downarrow$}
 \vspace{0.04cm}
-\begin{block}{Shared response layer: accommodation to robot actions}
+\begin{block}{Core contribution 2: Response to candidate robot actions}
 Predict $p_\psi(u_H\mid h_t,c,\tilde u_R,z_H)$: how the human may respond to each candidate robot action $\tilde u_R$; $\psi$ denotes learned parameters. 
 \end{block}
 \centering\textcolor{orange}{\Large$\Downarrow$}
 \vspace{0.04cm}
+{\raggedright\textbf{Possible control-facing realizations}\hfill{\footnotesize Notation is introduced on the following slides.}\par}
+\vspace{0.03cm}
 \begin{columns}[T,onlytextwidth]
 \column{0.32\textwidth}
 \begin{block}{A. Cost/preferences}
@@ -302,8 +325,14 @@ Response-conditioned goal, path mode, or trajectory $\xi_H^*$.
 Response-conditioned vector field $f_H(x^O,\tilde u_R;\theta_H)$.
 \end{block}
 \end{columns}
-\pinkcomment{ 1. Question. horzontally, A, B, C are too corowded. (whether it is feasible only keep A and B here and move C to backup? As it is realtoive vague and not revlent to the paper he shareed)
-2. here, mention from the frame work, the above two are novelities and the bottom three will be the possible settings in details. 3. also mention notations will be discussed in the followed pages.}
+% User question: A, B, and C look crowded horizontally. Is it better to retain only A and B in the
+% main deck and move C to backup because C is relatively vague and less connected to the shared papers?
+% Assistant response: Yes, that is the stronger meeting version. A is directly connected to the
+% bounded-rational and PACE/N-PACE papers; B connects naturally to Diffusion Co-Policy's multimodal
+% sequence prediction. C is a valid control interface, but it currently has the weakest evidence and
+% risks diluting the main argument. I would keep C as a small box on this overview only if you want to
+% signal breadth, while moving its detailed slides to backup. After you confirm, the main-deck model
+% comparison and first-study slides should also be revised from A--C to A--B plus a hybrid.
 \end{frame}
 
 \begin{frame}{How the intention representations will be evaluated}
@@ -342,10 +371,10 @@ where $\mathcal M_{\mathrm{int}}$ includes translate, rotate, hold, align, inser
 \end{block}
 \column{0.44\textwidth}
 \begin{exampleblock}{Why it supports generalization}
-Different tasks reuse a small vocabulary: transport may be \emph{translate--rotate--align}; insertion may be \emph{approach--align--hold--insert}.
+Factory tasks reuse a small vocabulary: transport may be \emph{translate--rotate--align}; insertion may be \emph{approach--align--hold--insert}.
 \end{exampleblock}
 \begin{alertblock}{Initial primitive vocabulary}
-Start with six object-level modes: translate, rotate, hold, align, insert, and yield. They are defined by distinct motion/force patterns, not by a specific task name. \pinkcomment{could be useful especially you mentioned factory setting}
+Start with six object-level modes: translate, rotate, hold, align, insert, and yield. Define them by motion/force patterns, not task names.
 \end{alertblock}
 \end{columns}
 \end{frame}
@@ -395,7 +424,15 @@ p_\psi(u^H_{t:t+H}\mid h_t,c,\tilde u^R_{t:t+H},z_H)
   \item $\tilde u^R$: candidate robot action sequence; $u^H$: predicted human response.
   \item The output conditions Options A--C; it is not a separate high-level intention by itself.
 \end{itemize}
-\pinkcomment{Question: In this layer, GT could also be used right? poential directions needs to be disucsss?}
+% User question: Could game theory (GT) also be used in this response layer, and should that be
+% discussed as a potential direction?
+% Assistant response: Yes. The response layer specifies the conditional prediction required by the
+% controller, not one mandatory implementation. A game-theoretic realization can compute the human's
+% bounded-rational best response for each candidate robot action using an inferred human cost; this is
+% closely related to N-PACE. A learned realization can estimate the conditional distribution directly
+% from data. The most promising direction is hybrid: use the game model for interpretable intent and
+% strategic coupling, then use a learned prior or residual to capture delay, multimodality, and behavior
+% not explained by the assumed cost. The next slide presents this distinction explicitly.
 \end{frame}
 
 \begin{frame}{Response prediction complements Co-Policy and N-PACE}
@@ -766,9 +803,18 @@ Begin with passive versus response-conditioned cost and desired-trajectory model
 \end{alertblock}
 \end{frame}
 
-\begin{frame}{Frame Title}
-\pinkcomment{add a ty page to remind me this is the end of the main deck.}
+{\setbeamertemplate{footline}{}
+\begin{frame}[plain]
+\centering
+\vfill
+{\color{navy}\LARGE\bfseries Thank you}\par
+\vspace{0.35cm}
+{\color{darkgray}\large Discussion}\par
+\vspace{0.55cm}
+{\color{muted}\normalsize Which human representation is most useful for safe, responsive co-manipulation?}\par
+\vfill
 \end{frame}
+}
 
 
 

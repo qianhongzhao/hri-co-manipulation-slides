@@ -76,15 +76,13 @@
     \fill[warmgray] (current page.south west) rectangle (current page.north east);
     \fill[orange] (current page.north west) rectangle ([xshift=0.18cm]current page.south west);
     \fill[navy] ([xshift=0.82cm,yshift=-0.88cm]current page.north west)
-      rectangle ([xshift=0.98cm,yshift=-3.35cm]current page.north west);
+      rectangle ([xshift=0.98cm,yshift=-2.72cm]current page.north west);
   \end{tikzpicture}
   \vspace{0.72cm}
   \hspace{0.78cm}{\color{navy}\fontsize{17.5}{22}\selectfont\bfseries
   Human Intention Modeling for\\[-0.03cm]\vspace{-0.5cm}
   \hspace{0.78cm}Physical Human--Robot Co-Manipulation\par}
 
-    \pinkcomment{The left blue vertical line looks too long}
-  
   \vspace{0.55cm}
   \hspace{0.78cm}{\color{darkgray}\fontsize{13}{17}\selectfont
   Control-relevant representations, inference methods,\\
@@ -97,8 +95,30 @@
   
 \end{frame}}
 
-\begin{frame}{Frame Title}
-    \pinkcomment{Use one page to revisit the cominipulation task definied the "Diffusion copolicy " paper, which is the test setting he mentioned in the email. what data is available, why human intention is necessary to model}
+\begin{frame}{Reference task: Collaborative table carrying}
+\begin{columns}[T,onlytextwidth]
+\column{0.48\textwidth}
+\begin{block}{Task in Diffusion Co-Policy}
+\begin{itemize}
+  \item A human and a robot act at opposite ends of a rigid table.
+  \item They move the table to a goal while avoiding obstacles.
+  \item Each partner applies a planar force; success requires coordinated translation and rotation.
+\end{itemize}
+\end{block}
+\column{0.48\textwidth}
+\begin{block}{Information available online}
+\begin{itemize}
+  \item table pose and velocity;
+  \item initial pose, goal, and obstacle locations;
+  \item recent human force commands and robot actions;
+  \item for physical co-manipulation: add measured 6D interaction wrench and human motion.
+\end{itemize}
+\end{block}
+\end{columns}
+\vspace{0.18cm}
+\begin{alertblock}{Why human intention must be modeled}
+The same table state can lead to different valid routes, rotations, and leader--follower roles. Without predicting the human's choice, the robot may resist the human, apply conflicting forces, or react too late.
+\end{alertblock}
 \end{frame}
 
 \begin{frame}{Human intention is hidden but control-relevant}
@@ -145,7 +165,7 @@ How should human intention be represented and inferred so that it improves real-
 \begin{block}{Terminology}
 ``Multimodal sensing'' means multiple input types (motion, wrench, vision). 
 
-``Multimodal behavior'' means multiple plausible future human strategies. 
+``Multimodal behavior'' means multiple possible future human strategies.
 \end{block}
 \end{frame}
 
@@ -155,7 +175,7 @@ How should human intention be represented and inferred so that it improves real-
 \column{0.315\textwidth}
 \begin{block}{Diffusion Co-Policy}
 \begin{itemize}
-  \item Generates multiple plausible (\pinkcomment{this kind of words (like plausible) I cannot understood, try to avoid it}) joint force/action sequences
+  \item Generates several possible joint force/action sequences
   \item Demonstrates adaptation and role switching
   \item Provides the physical test setting for collaborative transport
 \end{itemize}
@@ -183,37 +203,50 @@ Human intention is modelable and useful for control; the unresolved question is 
 \end{alertblock}
 \end{frame}
 
-\begin{frame}{Five control-relevant intention representations}
-\footnotesize
+\begin{frame}{A hierarchy of control-relevant intention representations}
+\begin{block}{High-level layer: interaction primitive}
+Output: $z_H=(m,g,v,\rho)$, describing the current phase, local goal, speed/force level, and interaction role.
+\end{block}
+\centering\textcolor{orange}{\Large$\Downarrow$}
+\vspace{0.08cm}
 \begin{columns}[T,onlytextwidth]
 \column{0.48\textwidth}
-\begin{block}{Interaction primitive}
-Output: discrete mode and continuous parameters $z_H=(m,g,v,\rho)$.
-\end{block}
-\begin{block}{Goal / desired object trajectory}
-Output: a terminal object pose, path mode, or desired trajectory $\xi_H^*$.
+\begin{block}{Desired object motion}
+Terminal pose, path mode, or desired trajectory $\xi_H^*$.
 \end{block}
 \begin{block}{Cost and preferences}
-Output: features $\phi$ and weights $w_H$ describing progress, effort, force, and safety tradeoffs.
+Features $\phi$ and weights $w_H$ for progress, effort, force, and safety.
 \end{block}
 \column{0.48\textwidth}
 \begin{block}{Local dynamical system}
-Output: a human-intended vector field $f_H(x^O;\theta_H)$ over object motion.
+Human-intended vector field $f_H(x^O;\theta_H)$ over object motion.
 \end{block}
 \begin{block}{Interactive response distribution}
-Output: possible interaction-wrench/action responses conditioned on candidate robot actions.
+Human wrench/action responses conditioned on candidate robot actions.
 \end{block}
 \end{columns}
-\pinkcomment{If the intentions are considered as hiriachy, form this page as hiraichy(multilayers) for example primitive -> 4 options. Do not form them as the paralelly in the same layer}
-\vspace{0.12cm}
-\begin{alertblock}{Selection criteria}
-Identifiability, predictive accuracy, real-time control utility, and transfer across tasks. \pinkcomment{too vague and short, consider use one page to explain the metrics in more details}
-\end{alertblock}
-
-
 \end{frame}
 
-\begin{frame}[shrink=7]{High-level option: Learn reusable interaction primitives}
+\begin{frame}{How the intention representations will be evaluated}
+\begin{columns}[T,onlytextwidth]
+\column{0.48\textwidth}
+\begin{block}{1. Intention identifiability}
+Can the model distinguish route, role, and task phase early? Measure classification accuracy, posterior confidence, and detection delay.
+\end{block}
+\begin{block}{2. Future prediction}
+Measure trajectory displacement, wrench prediction error, likelihood of observed behavior, and coverage of different valid futures.
+\end{block}
+\column{0.48\textwidth}
+\begin{block}{3. Closed-loop control value}
+Measure task success, completion time, human effort, conflicting interaction force, safety violations, and online computation time.
+\end{block}
+\begin{block}{4. Transfer and adaptation}
+Test unseen users, objects, obstacle layouts, and tasks; report zero-shot performance and data required for personalization.
+\end{block}
+\end{columns}
+\end{frame}
+
+\begin{frame}{High-level option: Reusable interaction primitives}
 \begin{columns}[T,onlytextwidth]
 \column{0.52\textwidth}
 \begin{block}{Switching latent-state model}
@@ -232,17 +265,33 @@ where $\mathcal M_{\mathrm{int}}$ includes translate, rotate, hold, align, inser
 \begin{exampleblock}{Why it supports generalization}
 Different tasks reuse a small vocabulary: transport may be \emph{translate--rotate--align}; insertion may be \emph{approach--align--hold--insert}.
 \end{exampleblock}
-\begin{alertblock}{How it can be trained}
-Use weak task-phase labels when available and semi-supervised EM / state-space learning otherwise. Train continuous parameters from future motion and wrench prediction. \pinkcomment{1. "EM" $\rightarrow$ this kind of abbv. need to be definied before you use them. 
-2. for differet primitive, how to identifiy? how many primitive should prepare.
-}
+\begin{alertblock}{Initial primitive vocabulary}
+Start with six object-level modes: translate, rotate, hold, align, insert, and yield. They are defined by distinct motion/force patterns, not by a specific task name.
 \end{alertblock}
 \end{columns}
-\vspace{0.15cm}
-{\scriptsize Related idea: ADACORL learns factored human decision models with limited labels (Unhelkar et al., CoRL 2020).}
 \end{frame}
 
-\begin{frame}[shrink=6]{Option A: Predict the human's desired object motion}
+\begin{frame}{How primitives are identified and learned}
+\begin{columns}[T,onlytextwidth]
+\column{0.48\textwidth}
+\begin{block}{Identify the current primitive}
+\begin{itemize}
+  \item Use task-phase labels when the phase is known.
+  \item Otherwise use Expectation--Maximization (EM) to infer latent switching modes from object motion, wrench, and context.
+  \item Infer $p(m_t\mid h_t,c)$ online rather than committing to one mode too early.
+\end{itemize}
+\end{block}
+\column{0.48\textwidth}
+\begin{block}{Decide how many primitives are needed}
+Begin with the six-mode vocabulary. Merge modes with indistinguishable motion/force responses; add a mode only when repeated residual patterns improve held-out prediction and control.
+\end{block}
+\begin{alertblock}{Learn continuous parameters}
+Within each mode, train goal, speed/force, and role parameters from future object motion and interaction-wrench prediction.
+\end{alertblock}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Option A: Desired object motion as intention}
 \begin{columns}[T,onlytextwidth]
 \column{0.52\textwidth}
 \begin{block}{Desired trajectory model}
@@ -265,13 +314,26 @@ Directly useful as a reference for shared-object MPC; easier to label and visual
 \begin{alertblock}{Main challenges}
 Multiple valid trajectories; changing intention; passive prediction ignores robot influence.
 \end{alertblock}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Option A: Training and control interface}
+\begin{columns}[T,onlytextwidth]
+\column{0.48\textwidth}
 \begin{block}{Training without a unique intent label}
-Use future object motion as a self-supervised target, but learn a distribution rather than one ``correct'' path. Optional goal labels come from controlled conditions; diffusion or best-of-$K$ losses preserve multiple valid futures.
+Use future object motion as a self-supervised target, but learn several possible future trajectories rather than one ``correct'' path. Controlled experiments can also provide route or goal labels.
+\end{block}
+\column{0.48\textwidth}
+\begin{block}{Learning objective}
+Use a diffusion loss or best-of-$K$ prediction loss so that left/right routes and alternative rotation strategies are retained instead of averaged together.
 \end{block}
 \end{columns}
-\vspace{0.05cm}
-{\scriptsize Best viewed as a \textbf{low-level control output}, not a complete human model (Townsend et al., 2017; Franceschi et al., 2023).}
-\pinkcomment{The scale of this page is different from other pages, you can split this page into two pages to ensure the scale of the pages are identical}
+\vspace{0.2cm}
+\begin{alertblock}{Role in the complete system}
+The desired motion is a low-level reference for shared-object model predictive control (MPC). Combine it with a primitive or preference model when the robot must explain why the human changes strategy.
+\end{alertblock}
+\vspace{0.12cm}
+Related: Townsend et al. (2017); Franceschi et al. (2023).
 \end{frame}
 
 \begin{frame}{Option B: Infer what the human is optimizing}
@@ -329,7 +391,7 @@ It replaces task-by-task manual feature design with a reusable cost representati
 \end{alertblock}
 \end{frame}
 
-\begin{frame}[shrink=7]{Option C: Model intention as a local vector field}
+\begin{frame}{Option C: Intention as a local vector field}
 \begin{columns}[T,onlytextwidth]
 \column{0.52\textwidth}
 \begin{block}{Human-intended dynamical system}
@@ -350,13 +412,26 @@ No assumption that the human solves a complete optimal-control problem; paramete
 \begin{block}{Difference from Option B}
 Option B explains behavior as approximate horizon optimization of a cost. Option C directly models local desired velocity; it is lighter-weight but less expressive about long-term tradeoffs.
 \end{block}
-\begin{alertblock}{Training without parameter labels}
-Fit object-motion likelihood by constrained system identification. Infer $\theta_H$ and switching modes with EM or a particle filter; impose stability and feasibility on $f_H$.
-\end{alertblock}
 \end{columns}
-\vspace{0.08cm}
-{\scriptsize Related: constraint-aware DS intent estimation with particle filtering (Shao et al., 2024).}
-\pinkcomment{{The scale of this page is different from other pages, you can split this page into two pages to ensure the scale of the pages are identical}}
+\end{frame}
+
+\begin{frame}{Option C: Training and online inference}
+\begin{columns}[T,onlytextwidth]
+\column{0.48\textwidth}
+\begin{block}{Training without parameter labels}
+Fit the likelihood of observed object motion using constrained system identification. The desired pose and response gains are latent variables rather than manually labeled quantities.
+\end{block}
+\column{0.48\textwidth}
+\begin{block}{Switching between local models}
+Use Expectation--Maximization (EM) offline or a particle filter online to infer $\theta_H$ and the active mode from motion and wrench measurements.
+\end{block}
+\end{columns}
+\vspace{0.2cm}
+\begin{alertblock}{Physical constraints}
+Constrain $f_H$ so the predicted motion remains stable, feasible for the shared object, and consistent with contact and actuation limits.
+\end{alertblock}
+\vspace{0.12cm}
+Related: constraint-aware dynamical-system intent estimation with particle filtering (Shao et al., 2024).
 \end{frame}
 
 \begin{frame}{Option D predicts responses to candidate robot actions}

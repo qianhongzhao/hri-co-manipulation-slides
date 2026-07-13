@@ -54,6 +54,9 @@
 \setbeamerfont{block body}{size=\small}
 
 \newcommand{\key}[1]{\textcolor{orange}{\textbf{#1}}}
+
+\newcommand{\pinkcomment}[1]{\textcolor{pink}{#1}}
+
 \newcommand{\paperout}[1]{%
   \begin{beamercolorbox}[rounded=true,sep=0.55em,wd=\linewidth]{block body}
     \footnotesize\textbf{Expected paper:} #1
@@ -77,7 +80,9 @@
   \vspace{0.72cm}
   \hspace{0.78cm}{\color{navy}\fontsize{17.5}{22}\selectfont\bfseries
   Human Intention Modeling for\\[0.12cm]
-  \hspace{0.78cm}Physical Human--Robot Co-Manipulation\par}
+  \hspace{0.78cm}Physical Human--Robot Co-Manipulation\par} \pinkcomment{here, the vspace between two lines are too wide}
+
+  
   \vspace{0.55cm}
   \hspace{0.78cm}{\color{darkgray}\fontsize{13}{17}\selectfont
   Control-relevant representations, inference methods,\\
@@ -87,9 +92,10 @@
   \vspace{0.12cm}
   \hspace{0.78cm}{\color{muted}\small Research Discussion with RISE Lab\par}
   \vspace{0.52cm}
+  
 \end{frame}}
 
-\begin{frame}{Human intention is hidden but control-relevant}
+\begin{frame}{Human intention is hidden but control-relevant \textcolor{pink}{}}
 \begin{columns}[T,onlytextwidth]
   \column{0.50\textwidth}
   \begin{block}{What the robot observes}
@@ -114,6 +120,7 @@
 \begin{alertblock}{Central question}
 How should human intention be represented and inferred so that it improves real-time robot planning and control in physically coupled tasks?
 \end{alertblock}
+\pinkcomment{for the page number, do not contain the backup part insides of total}
 \end{frame}
 
 \begin{frame}{A useful model must resolve four uncertainties}
@@ -135,7 +142,7 @@ How should human intention be represented and inferred so that it improves real-
 \end{block}
 \end{frame}
 
-\begin{frame}[shrink=5]{Shared papers show intention modeling is feasible}
+\begin{frame}[shrink=5]{Shared papers show intention modeling is feasible \pinkcomment{and benefical}}
 \small
 \begin{columns}[T,onlytextwidth]
 \column{0.315\textwidth}
@@ -143,7 +150,7 @@ How should human intention be represented and inferred so that it improves real-
 \begin{itemize}
   \item Generates multiple plausible joint force/action sequences
   \item Demonstrates adaptation and role switching
-  \item Provides a relevant physical collaborative-transport setting
+  \item Provides a relevant physical collaborative-transport setting \pinkcomment{this sentence contains only one word in one line avoid this situation}
 \end{itemize}
 \end{block}
 \column{0.315\textwidth}
@@ -191,6 +198,121 @@ Output: possible human wrench/action responses conditioned on candidate robot ac
 \begin{alertblock}{Selection criteria}
 Identifiability, predictive accuracy, real-time control utility, and transfer across tasks.
 \end{alertblock}
+
+\pinkcomment{Consider added this in one of the above option or form the followed as a new one "把 human model 做成“interaction primitive model”
+
+我认为这对你们的 generalization 目标非常重要。
+
+多数 co-manipulation 看起来任务不同，但底层反复出现的 interaction primitives 很有限，例如：
+
+m
+t
+	​
+
+∈{translate,rotate,hold,pivot,align,lift,lower,insert,yield}
+
+然后每个 primitive 再有连续参数：
+
+z
+t
+	​
+
+=(m
+t
+	​
+
+,g
+t
+	​
+
+,v
+t
+	​
+
+,ρ
+t
+	​
+
+)
+
+其中：
+
+m
+t
+	​
+
+：当前 primitive；
+g
+t
+	​
+
+：该 primitive 的目标，例如目标方向或姿态；
+v
+t
+	​
+
+：期望速度或力度；
+ρ
+t
+	​
+
+：human 的 role/compliance。
+
+例如“搬桌子过门”可以分解为：
+
+translate→rotate→align→translate
+
+“协同插入”则是：
+
+approach→align→hold→insert
+
+模型不为每个任务训练一套新 policy，只学习：
+
+通用 primitive 库；
+primitive 的转换规律；
+当前 primitive 的连续目标参数。
+
+这可以写成 switching latent-state model：
+
+p(z
+t+1
+	​
+
+∣z
+t
+	​
+
+,o
+t
+	​
+
+,u
+t
+R
+	​
+
+)
+p(u
+t
+H
+	​
+
+∣z
+t
+	​
+
+,o
+t
+	​
+
+,u
+t
+R
+	​
+
+)
+
+它类似 controlled HMM、switching dynamical system 或 neural state-space model。ADACORL 也是类似思想：不一定用 cost 表示人，而是联合学习 human policy 和 latent-state dynamics，并将 human model 与具体 task model 分离。"}
 \end{frame}
 
 \begin{frame}{Option A: Predict the human's desired object motion}
@@ -218,6 +340,10 @@ Multiple valid trajectories; changing intention; passive prediction ignores robo
 \end{alertblock}
 \textbf{Possible solution:} mode-conditioned Transformer/diffusion prediction with receding-horizon updates.
 \end{columns}
+
+\pinkcomment{所以最好把它作为低层输出，而不是完整模型。}
+
+\pinkcomment{Find some references, consider clarify what is the label? for this kind of models, the indivdual label may not good enough as you have multiple vaild trajs, right? }
 \end{frame}
 
 \begin{frame}{Option B infers what the human is optimizing}
@@ -243,6 +369,8 @@ Non-identifiability, semantic drift in learned features, and approximate human o
 \end{alertblock}
 \textbf{Possible solution:} structured feature dictionary + learned residual features + Bayesian weight inference + informative robot probing.
 \end{columns}
+
+\pinkcomment{Again, how to train this model? Can we have label? looks this is something like WM that we do not have the latent state label of the systems for control right? how to address this? }
 \end{frame}
 
 \begin{frame}[shrink=4]{Option C: Model intention as a local vector field}
@@ -268,6 +396,7 @@ A single vector field cannot represent branching paths, abrupt switches, or comp
 \end{alertblock}
 \textbf{Possible solution:} mixture of stable dynamical systems with a switching latent mode and context-conditioned parameters.
 \end{columns}
+\pinkcomment{what is the difference between C and B? also the key point is how to train this model? }
 \end{frame}
 
 \begin{frame}{Option D predicts responses to candidate robot actions}
@@ -295,6 +424,7 @@ p_\psi(u^H_{t:t+H}\mid h_t,c,u^R_{t:t+H})
   \item A diffusion/sequence model can represent multiple responses and role switches.
   \item It is predictive, but intention remains implicit unless the model also exposes a goal, trajectory, or preference variable.
 \end{itemize}
+\pinkcomment{This one looks the same as this paper right "Diffusion Co-Policy for Synergistic Human-Robot Collaborative Tasks", advantage / disadvantage? }
 \end{frame}
 
 \begin{frame}{No single representation satisfies every requirement}
@@ -344,6 +474,7 @@ Use structured intention variables as the control interface, while a learned res
 \begin{block}{What ``structured'' means here}
 The encoder may be complex, but its outputs have defined control semantics: intended path/role, desired object motion, and preference weights.
 \end{block}
+\pinkcomment{so many components are overlaped in the flowchart plot }
 \end{frame}
 
 \begin{frame}{Offline priors support online personalization}
@@ -450,7 +581,10 @@ Compare control-relevant human intention representations for physical collaborat
 \begin{alertblock}{Recommended starting scope}
 Begin with desired-trajectory and cost/preference baselines, then add robot-action-conditioned response prediction as the learned component.
 \end{alertblock}
+\pinkcomment{ One thing also need to consider: how to get data? exisiting dataste? collect on their own and form it as a benchmark or dataset paper? how many data modality?}
 \end{frame}
+
+
 
 
 

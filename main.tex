@@ -308,9 +308,9 @@ Output: $z_H=(m,g,v,\rho)$, describing the current phase, local goal, speed/forc
 \begin{block}{Core contribution 2: Response to candidate robot actions}
 Predict $p_\psi(u_H\mid h_t,c,\tilde u_R,z_H)$: how the human may respond to each candidate robot action $\tilde u_R$; $\psi$ denotes learned parameters. 
 \end{block}
-\centering\textcolor{orange}{\Large$\Downarrow$}
+\centering\textcolor{orange}{\Large$\Downarrow$}\par
 \vspace{0.04cm}
-{\raggedright\textbf{Two control-facing realizations}\hfill{\footnotesize Notation is introduced on the following slides.}\par}
+{\raggedright\textbf{Two control-facing realizations}\par}
 \vspace{0.03cm}
 \begin{columns}[T,onlytextwidth]
 \column{0.48\textwidth}
@@ -322,13 +322,13 @@ Response-conditioned cost $J_H(u_R)$ and preference weights $w_H$.
 Response-conditioned goal, path mode, or trajectory $\xi_H^*$.
 \end{block}
 \end{columns}
-\pinkcomment{move the second arrow in the middle of the page horzontally  delete "Notation is introduced on the following slides."} 
+% Original pink request: \pinkcomment{move the second arrow in the middle of the page horzontally
+% delete "Notation is introduced on the following slides."}
 % Assistant response: Agreed. The second arrow should be centered between Core Contribution 2 and
 % the two realization boxes. It appears beside the heading because the arrow is not terminated by an
 % explicit paragraph break; adding \par after \Downarrow will center it on its own line. The notation
 % sentence can be deleted because each symbol is already defined on the following technical slides.
-
-\greencomment{plz address}
+% User decision: Implement the centered arrow and remove the notation sentence.
 % User question: A, B, and C look crowded horizontally. Is it better to retain only A and B in the
 % main deck and move C to backup because C is relatively vague and less connected to the shared papers?
 % Assistant response: Yes, that is the stronger meeting version. A is directly connected to the
@@ -442,11 +442,11 @@ p_\psi(u^H_{t:t+H}\mid h_t,c,\tilde u^R_{t:t+H},z_H)
 % User decision: Make the game-theoretic realization explicit in the visible comparison on the next page.
 \end{frame}
 
-\begin{frame}{Response prediction complements Co-Policy and N-PACE}
+\begin{frame}{Explicit human models support structured interaction}
 \begin{columns}[T,onlytextwidth]
 \column{0.315\textwidth}
-\begin{block}{Diffusion Co-Policy}
-Generates joint human--robot action sequences directly from demonstrations. It captures different behaviors, but human intention remains implicit.
+\begin{block}{Implicit behavior generation}
+Diffusion Co-Policy captures multimodal joint actions, but human intention remains implicit, making it harder to interpret, personalize, or connect directly to structured control.
 \end{block}
 \column{0.315\textwidth}
 \begin{block}{Learned response model}
@@ -461,14 +461,16 @@ N-PACE uses inferred costs and a dynamic game to compute bounded-rational respon
 \begin{alertblock}{Proposed combination}
 Use N-PACE for interpretable intent and peer-learning structure; use the learned response model as a population prior or residual for behavior the game model does not explain.
 \end{alertblock}
-\pinkcomment{Q: this page to backup?}
+% Original pink question: \pinkcomment{Q: this page to backup?}
 % Assistant response: I recommend keeping this page in the main deck. It is the conceptual bridge from
 % the shared papers to the proposal: Diffusion Co-Policy motivates a learned multimodal response model,
 % N-PACE motivates an interpretable game-theoretic response, and the hybrid is the proposed direction.
 % Without this page, Option A and the later N-PACE connection appear less motivated. Present it briefly
 % (about 30--45 seconds). If the main deck must be shortened further, merge its central comparison into
 % the preceding response-layer slide and move only the expanded three-column comparison to backup.
-\greencomment{Do not need to underline the matchness with copolicy, looks they are not very interested in diffusion compare to blocked structure, but can mention the weakness of copolicy here to highlight the value of human intention model}
+% User decision: Keep the page in the main deck, but do not emphasize matching Diffusion Co-Policy.
+% Mention its implicit-intent limitation only to motivate the value of an explicit human model and
+% emphasize the structured learned/game-theoretic hybrid.
 \end{frame}
 
 \begin{frame}{Option A: Infer the human's objective}
@@ -573,7 +575,10 @@ Use a diffusion loss or a loss that keeps the best among several predictions, so
 \end{columns}
 \vspace{0.2cm}
 \begin{alertblock}{Role in the complete system}
-The desired motion is a low-level reference for shared-object model predictive control (MPC) \pinkcomment{or MPPI? from my understanding for estimated cost maybe sample based could be better? the optimzation of estimated cost could be not desired and even waster computation?}. Combine it with a primitive or preference model when the robot must explain why the human changes strategy.
+The desired motion is a low-level reference for shared-object model predictive control (MPC). Combine it with a primitive or preference model when the robot must explain why the human changes strategy.
+% Original pink question: \pinkcomment{or MPPI? from my understanding for estimated cost maybe
+% sample based could be better? the optimzation of estimated cost could be not desired and even
+% waster computation?}
 % Assistant response: MPPI is a sampling-based MPC algorithm, so the choice is not simply MPC versus
 % MPPI. If Option B outputs a desired object trajectory and the physical dynamics/cost are smooth, a
 % standard trajectory-tracking MPC is the clearest baseline and can enforce object, contact, and safety
@@ -585,8 +590,7 @@ The desired motion is a low-level reference for shared-object model predictive c
 % shared-object MPC; sampling-based MPPI is one candidate solver for multimodal interactive rollouts."
 % Cost/model uncertainty should additionally be handled with ensembles or risk-sensitive objectives,
 % physical constraints, and an independent safety filter.
-
-\greencomment{keep current version as it is, remove pink question in comments( not visible in pdf)}
+% User decision: Keep the current MPC wording and retain the MPPI discussion only in source comments.
 \end{alertblock}
 \vspace{0.12cm}
 Related: Townsend et al. (2017); Franceschi et al. (2023).
@@ -596,21 +600,22 @@ Related: Townsend et al. (2017); Franceschi et al. (2023).
 \scriptsize
 \centering
 \renewcommand{\arraystretch}{1.28}
-\begin{tabularx}{\textwidth}{>{\bfseries}p{2.5cm}XXXX}
+\begin{tabularx}{\textwidth}{>{\bfseries}p{2.9cm}XXXX}
 \toprule
 Representation & Control interface & Key strength & Main weakness & Best use \\
 \midrule
-Interaction primitive & Latent mode $z_H$ & Cross-task structure & Needs mode discovery & Task-phase inference \\
+\mbox{Interaction primitive} & Latent mode $z_H$ & Cross-task structure & Needs mode discovery & Task-phase inference \\
 Response layer & $p(u_H\mid \tilde u_R,z_H)$ & Models accommodation & Needs diverse robot actions & Candidate-action evaluation \\
 Cost / preferences & $J_H,\,w_H,\,\phi$ & Interpretable and game-compatible & Identifiability and feature design & Negotiation and tradeoffs \\
 Desired trajectory & Reference $\xi_H^*$ & Direct and visual & Needs robot-action coverage & Shared-object MPC \\
 \bottomrule
 \end{tabularx}
-\greencomment{make "Interaction primi-
-tive" in one single line current version looks not good}
+% User decision: Keep "Interaction primitive" on one line in the comparison table.
 \vspace{0.32cm}
 \begin{alertblock}{Proposed position}
-Use the learned response layer to condition both intention interfaces on candidate robot actions; retain either cost/preferences or desired trajectory as the interpretable input to control \greencomment{mention primitive could be a tentive version, in the future, this can be formed as more veritaile model that doesn't need predefine several initial primitives}
+Condition both intention interfaces on candidate robot actions. The discrete primitive vocabulary is a tractable starting point, not a fixed ontology; future work can learn a continuous, task-conditioned latent representation across tasks without predefining the modes.
+% User decision: Present the initial primitive vocabulary as a tentative implementation. The longer-term
+% model should be more versatile and learn its latent representation without predefined primitives.
 \end{alertblock}
 \end{frame}
 

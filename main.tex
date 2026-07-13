@@ -59,6 +59,73 @@
 % 你上一次把我的 ”\newcommand{\pinkcomment}[1]{\textcolor{pink}{\textbf{#1}}}“ 删掉了再改的时候不要动这一行
 \newcommand{\greencomment}[1]{\textcolor{green}{\textbf{#1}}}
 
+% -----------------------------------------------------------------------------
+% Design discussion archive (source only; intentionally not rendered in PDF)
+%
+% 1. Why use an explicit human-intention model?
+% User question: Diffusion Co-Policy generates actions as a black box. Should the slide explain
+% that an explicit intention/response-oriented controller could be better?
+% Assistant response: Diffusion Co-Policy learns a joint human--robot action distribution from
+% demonstrations, so intention remains implicit and is not separately identifiable. An explicit
+% model is useful for explanation, candidate-action evaluation, and model-based safety, but is not
+% automatically more accurate because it can add modeling error and needs diverse robot-action
+% data. The strongest proposal is a hybrid: explicit control-relevant intent variables plus a
+% learned response model for behavior that the structured model does not capture.
+% User decision: Revise the visible slide to state this necessity while retaining the discussion.
+%
+% 2. Notation-summary page placement.
+% User request: Move the notation-summary page to backup.
+% Assistant response: Agreed. Moving it improves the main narrative, provided every main-deck
+% formula keeps short local definitions at or before first use.
+% User decision: Move it.
+%
+% 3. Response conditioning for Options A--C.
+% User question: Should all structured intention options account for human response to the robot?
+% Assistant response: Yes. Option A is response-aware through u^R in its game cost; Option B can
+% use p(xi_H^* | h_t,c,tilde u^R); Option C can use f_H(x_O,c,tilde u^R;theta_H).
+% Response prediction should be a shared layer around A--C, not an independent intent variable.
+% User decision: Add a response-prediction layer between the primitive and Options A--C and update
+% the following slides to match this hierarchy.
+%
+% 4. Generality of the local dynamical-system model.
+% User question: Why show only rotation; should the model cover a more general case?
+% Assistant response: The model should cover the full rigid-object pose. The general state model
+% includes translation, rotation, and linear/angular velocity. Rotation was separated because
+% orientation is not handled by ordinary Euclidean subtraction. A clearer slide should present a
+% full pose model with explicit translation and orientation components.
+% User decision: Revise the visible slide to avoid the rotation-only misunderstanding.
+%
+% 5. Relationship between response prediction and N-PACE.
+% User question: Both appear to model how the human accommodates robot behavior. Are they the same?
+% Assistant response: They share a closed-loop idea but differ technically. N-PACE is structured
+% and game-theoretic: it assumes parameterized costs/policies, estimates peer cost parameters, and
+% models peer learning. The response model is data-driven p(u^H | history,context,candidate u^R)
+% and can predict accommodation without identifying a cost or learning law. They can be combined:
+% N-PACE supplies interpretable intent/learning structure; the response model supplies a learned
+% prior or residual for behavior N-PACE does not explain.
+% User decision: Include this distinction when introducing the new response layer.
+%
+% 6. Meaning of calibrated uncertainty on held-out people.
+% User question: The phrase is difficult to understand.
+% Assistant response: Test confidence on participants excluded from training. If the model gives an
+% 80 percent prediction region, unseen-participant actions should fall inside it about 80 percent
+% of the time. Simpler visible wording: uncertainty estimates tested on unseen participants.
+% User decision: Replace the original wording with simpler language.
+%
+% 7. Bayesian-update page placement.
+% User request: Move the Bayesian equation to backup.
+% Assistant response: Agreed. The main story only needs the verbal idea that observed wrench and
+% object motion update a population prior; the equation remains useful for implementation questions.
+% User decision: Move it.
+%
+% 8. Translation--rotation tradeoff in the first study.
+% User question: This tradeoff was not introduced earlier.
+% Assistant response: One route may require shorter translation but larger table rotation, while
+% another may be longer with less rotation. Either introduce that tradeoff earlier or replace it
+% with the already established phrase "coordinated translation and rotation around obstacles."
+% User decision: Introduce it earlier or use clearer wording; use the clearer wording here.
+% -----------------------------------------------------------------------------
+
 \newcommand{\paperout}[1]{%
   \begin{beamercolorbox}[rounded=true,sep=0.55em,wd=\linewidth]{block body}
     \footnotesize\textbf{Expected paper:} #1
@@ -116,17 +183,9 @@
 \end{itemize}
 \end{block}
 \end{columns}
-\vspace{0.18cm}
-\begin{alertblock}{Why human intention should be modeled}
-The same table state can lead to different valid routes, rotations, and leader--follower roles. Without predicting the human's choice, the robot may resist the human, apply conflicting forces, or react too late. \pinkcomment{ should mention the copolicy consider the policy generation as a black box which is not explainable? a bloacked human intention, intention response oriented control could be better?}
-% Response: Yes. Diffusion Co-Policy learns a joint human--robot action distribution directly
-% from demonstrations, so human intention is implicit inside a black-box policy and is not
-% separately identifiable or interpretable. An intention/response-oriented architecture can be
-% preferable when we need explanation, candidate-action evaluation, or model-based safety.
-% It is not automatically more accurate: an explicit model may add modeling error and requires
-% diverse robot-action data. The strongest proposal is a hybrid: explicit control-relevant intent
-% variables plus a learned response model for behavior the structured model does not capture.
-\greencomment{plz modify the visable part such that include the necessaity of the explicit human intention model, alos please keep your comment reply here.}
+\vspace{0.02cm}
+\begin{alertblock}{Why an explicit human model is needed}
+Diffusion Co-Policy maps history to joint actions, leaving intention implicit. An explicit model exposes intent, tests candidate robot actions, and connects prediction to planning and safety. A hybrid preserves learned flexibility.
 \end{alertblock}
 \end{frame}
 
@@ -155,35 +214,6 @@ The same table state can lead to different valid routes, rotations, and leader--
 \begin{alertblock}{Central question}
 How should human intention be represented and inferred so that it improves real-time robot planning and control in physically coupled tasks?
 \end{alertblock}
-\end{frame}
-
-\begin{frame}{Notation used throughout the discussion}
-\begin{columns}[T,onlytextwidth]
-\column{0.48\textwidth}
-\begin{block}{Indices and agents}
-\begin{itemize}
-  \item $t$: current time; $k$: a time inside the prediction horizon;
-  \item $H$: number of future steps being predicted;
-  \item superscripts $O$, $H$, and $R$: object, human, and robot.
-\end{itemize}
-\end{block}
-\begin{block}{Signals}
-$x$: state or pose; $u$: action or force command; $\mathbf w^{\mathrm{int}}$: measured interaction wrench.
-\end{block}
-\column{0.48\textwidth}
-\begin{block}{Model inputs}
-$h_t$: recent interaction history up to time $t$; $c$: task context, including goal, geometry, object properties, and constraints.
-\end{block}
-\begin{block}{Model notation}
-$p(a\mid b)$: distribution of $a$ given $b$; $\psi$: learned model parameters; $*$: desired or latent quantity; $\dot{x}$: time derivative of $x$. PACE means Peer-Aware Cost Estimation; N-PACE is its nonlinear extension.
-\end{block}
-\end{columns}
-
-\pinkcomment{Put this page to backup}
-% Response: Agreed. This notation-summary page can be moved to the backup because it interrupts
-% the main narrative. If it is moved, every formula in the main deck must retain short local
-% definitions immediately below it so each symbol is defined before or at its first use.
-\greencomment{please move }
 \end{frame}
 
 \begin{frame}{A useful model must resolve four uncertainties}
@@ -241,36 +271,31 @@ Human intention is modelable and useful for control; the unresolved question is 
 \end{alertblock}
 \end{frame}
 
-\begin{frame}{A hierarchy of control-relevant intention representations}
+\begin{frame}{A response-conditioned hierarchy for human intention}
 \begin{block}{High-level layer: interaction primitive}
 Output: $z_H=(m,g,v,\rho)$, describing the current phase, local goal, speed/force level, and interaction role.
 \end{block}
 \centering\textcolor{orange}{\Large$\Downarrow$}
-\vspace{0.08cm}
+\vspace{0.04cm}
+\begin{block}{Shared response layer: accommodation to robot actions}
+Predict $p_\psi(u_H\mid h_t,c,\tilde u_R,z_H)$: how the human may respond to each candidate robot action $\tilde u_R$; $\psi$ denotes learned parameters.
+\end{block}
+\centering\textcolor{orange}{\Large$\Downarrow$}
+\vspace{0.04cm}
 \begin{columns}[T,onlytextwidth]
-\column{0.48\textwidth}
-\begin{block}{Desired object motion}
-Terminal pose, path mode, or desired trajectory $\xi_H^*$.
+\column{0.32\textwidth}
+\begin{block}{A. Cost/preferences}
+Response-conditioned cost $J_H(u_R)$ and preference weights $w_H$.
 \end{block}
-\begin{block}{Cost and preferences}
-Features $\phi$ and weights $w_H$ for progress, effort, force, and safety.
+\column{0.32\textwidth}
+\begin{block}{B. Desired motion}
+Response-conditioned goal, path mode, or trajectory $\xi_H^*$.
 \end{block}
-\column{0.48\textwidth}
-\begin{block}{Local dynamical system}
-Human-intended vector field $f_H(x^O;\theta_H)$ over object motion; $\theta_H$ denotes its human-specific parameters.
-\end{block}
-\begin{block}{Interactive response distribution}
-Human wrench/action responses conditioned on candidate robot actions.
+\column{0.32\textwidth}
+\begin{block}{C. Local dynamics}
+Response-conditioned vector field $f_H(x^O,\tilde u_R;\theta_H)$.
 \end{block}
 \end{columns}
-\pinkcomment{As for human action response prediction for should the previous three options all take this account in their own model?}
-% Response: Ideally yes. Human behavior is closed-loop, so Options A--C should account for the
-% robot action being considered. Option A already includes u^R in the cost and becomes
-% response-aware when solved as a dynamic game. Option B can be extended to
-% p(xi_H^* | h_t,c,tilde u^R), and Option C to f_H(x_O,c,tilde u^R;theta_H).
-% Option D is best viewed as a general response-model layer around these structured intent
-% representations, not as an independent intent variable at the same level.
-\greencomment{If so, please add one more layer here to introduce  human action response prediction between interaction primitive and option A-C. And also modify the next several pages to make their logic can match this updated structure plots}
 \end{frame}
 
 \begin{frame}{How the intention representations will be evaluated}
@@ -337,6 +362,54 @@ Within each mode, train goal, speed/force, and role parameters from future objec
 \end{columns}
 \end{frame}
 
+\begin{frame}{Shared response layer: Predict human accommodation}
+\begin{columns}[c,onlytextwidth]
+\column{0.43\textwidth}
+\begin{block}{Passive prediction}
+\[
+p(u^H_{t:t+H}\mid h_t,c)
+\]
+\centering What might the human do next?
+\end{block}
+\column{0.08\textwidth}
+\centering\Large\textcolor{orange}{$\Longrightarrow$}
+\column{0.49\textwidth}
+\begin{alertblock}{Response to a candidate robot action}
+\[
+p_\psi(u^H_{t:t+H}\mid h_t,c,\tilde u^R_{t:t+H},z_H)
+\]
+\centering How might the human respond if the robot executes $\tilde u^R$?
+\end{alertblock}
+\end{columns}
+\vspace{0.25cm}
+\begin{itemize}
+  \item $h_t$: recent interaction history; $c$: task context; $z_H$: current primitive.
+  \item $\tilde u^R$: candidate robot action sequence; $u^H$: predicted human response.
+  \item The output conditions Options A--C; it is not a separate high-level intention by itself.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Response prediction complements Co-Policy and N-PACE}
+\begin{columns}[T,onlytextwidth]
+\column{0.315\textwidth}
+\begin{block}{Diffusion Co-Policy}
+Generates joint human--robot action sequences directly from demonstrations. It captures different behaviors, but human intention remains implicit.
+\end{block}
+\column{0.315\textwidth}
+\begin{block}{Response model}
+Predicts $p(u^H\mid h,c,\tilde u^R)$ for each candidate robot action. It can model accommodation without assuming a human cost or learning rule.
+\end{block}
+\column{0.315\textwidth}
+\begin{block}{N-PACE}
+Uses parameterized costs and a dynamic game to estimate peer intent and explicitly model how the peer learns about the robot.
+\end{block}
+\end{columns}
+\vspace{0.22cm}
+\begin{alertblock}{Proposed combination}
+Use N-PACE for interpretable intent and peer-learning structure; use the learned response model as a population prior or residual for behavior the game model does not explain.
+\end{alertblock}
+\end{frame}
+
 \begin{frame}{Option A: Infer the human's objective}
 \begin{block}{Task-conditioned human cost}
 \[
@@ -351,7 +424,7 @@ $J_H$: cumulative human cost; $\phi_\psi$: learned and physical cost-feature vec
 \end{block}
 \column{0.48\textwidth}
 \begin{block}{State and action notation}
-$x_k^O$: object state; $u_k^H$: human action; $u_k^R$: robot action. The sum covers steps $k=t$ through $t+H$ under context $c$.
+$x_k^O$: object state; $u_k^H$: human action; $u_k^R$: candidate robot action considered by the planner. The sum covers steps $k=t$ through $t+H$ under context $c$.
 \end{block}
 \end{columns}
 \end{frame}
@@ -360,7 +433,7 @@ $x_k^O$: object state; $u_k^H$: human action; $u_k^R$: robot action. The sum cov
 \begin{columns}[T,onlytextwidth]
 \column{0.48\textwidth}
 \begin{exampleblock}{Why it is attractive}
-The weights expose tradeoffs among progress, effort, interaction force, safety, and coordination. The model connects directly to game-theoretic planning, IOC, PACE, and N-PACE.
+The weights expose tradeoffs among progress, effort, interaction force, safety, and coordination. Because $u^R$ enters the features, the inferred human optimum can change with the candidate robot action. The model connects directly to IOC, PACE, and N-PACE.
 \end{exampleblock}
 \begin{block}{Training without cost labels}
 Maximum-entropy inverse optimal control (IOC) learns $\phi_\psi$ from demonstrated actions; person-specific $w_H$ is inferred as a latent variable.
@@ -405,10 +478,10 @@ It replaces task-by-task manual feature design with a reusable cost representati
 \column{0.52\textwidth}
 \begin{block}{Desired trajectory model}
 \[
-p_\psi(\xi_H^*\mid h_t,c),\qquad
+p_\psi(\xi_H^*\mid h_t,c,\tilde u^R_{t:t+H}),\qquad
 \xi_H^*=\{x_{O,k}^{H,*}\}_{k=t}^{t+H}
 \]
-$\xi_H^*$ is the human-intended object trajectory; $x_{O,k}^{H,*}$ is its desired object state at step $k$. The model outputs a distribution because several trajectories may be valid.
+$\xi_H^*$ is the human-intended object trajectory; $x_{O,k}^{H,*}$ is its desired object state at step $k$; $\tilde u^R$ is the candidate robot action sequence. The model outputs a distribution because several responses may be valid.
 \end{block}
 \textbf{Possible outputs}
 \begin{itemize}
@@ -421,7 +494,7 @@ $\xi_H^*$ is the human-intended object trajectory; $x_{O,k}^{H,*}$ is its desire
 Directly useful as a reference for shared-object MPC; easier to label and visualize than latent cost parameters.
 \end{exampleblock}
 \begin{alertblock}{Main challenges}
-Multiple valid trajectories; changing intention; passive prediction ignores robot influence.
+Multiple valid trajectories; changing intention; and limited training coverage of possible robot actions.
 \end{alertblock}
 \end{columns}
 \end{frame}
@@ -430,7 +503,7 @@ Multiple valid trajectories; changing intention; passive prediction ignores robo
 \begin{columns}[T,onlytextwidth]
 \column{0.48\textwidth}
 \begin{block}{Training without a unique intent label}
-Use future object motion as a self-supervised target, but learn several possible future trajectories rather than one ``correct'' path. Controlled experiments can also provide route or goal labels.
+Use future object motion paired with the executed robot action as a self-supervised target, but learn several possible human responses rather than one ``correct'' path. Controlled experiments can also provide route or goal labels.
 \end{block}
 \column{0.48\textwidth}
 \begin{block}{Learning objective}
@@ -453,9 +526,9 @@ An attractor model assumes the human is pulling the shared object toward an inte
 \end{block}
 \begin{block}{Position example}
 \[
-\dot p_O^{H,*}=K_p(p_H^*-p_O)
+\dot p_O^{H,*}=K_p\bigl(p_H^*(\tilde u_R)-p_O\bigr)
 \]
-$p_O$: current object position; $p_H^*$: inferred human target; $K_p>0$: response gain; $\dot p_O^{H,*}$: human-desired object velocity.
+$p_O$: current object position; $p_H^*(\tilde u_R)$: inferred human target under candidate robot action $\tilde u_R$; $K_p>0$: response gain; $\dot p_O^{H,*}$: human-desired object velocity.
 \end{block}
 \column{0.48\textwidth}
 \begin{exampleblock}{Why it is attractive}
@@ -467,42 +540,31 @@ It is well suited to local motion toward a goal, but one attractor cannot repres
 \end{columns}
 \end{frame}
 
-\begin{frame}{Option C: Full object-pose model and notation}
-\begin{block}{Human-intended local dynamics}
+\begin{frame}{Option C: Full rigid-object pose model}
+\begin{block}{Response-conditioned translation and rotation}
 \[
-\dot{x}_O^{H,*}=f_H(x_O,c;\theta_H),\qquad
-\omega_O^{H,*}=f_{\mathrm{rot}}(R_O,R_H^*;K_{\mathrm{rot}})
+\begin{bmatrix}\dot p_O^{H,*}\\[2pt]\omega_O^{H,*}\end{bmatrix}
+=f_H(p_O,R_O,c,\tilde u_R;\theta_H)
 \]
+$p_O$ and $R_O$ are the current object position and orientation; $\dot p_O^{H,*}$ and $\omega_O^{H,*}$ are the human-desired linear and angular velocities.
 \end{block}
 \begin{columns}[T,onlytextwidth]
 \column{0.48\textwidth}
-\begin{block}{General model}
-$x_O$: current object state; $\dot{x}_O^{H,*}$: human-desired state change; $f_H$: vector field mapping state and context to desired motion; $\theta_H$: human-specific model parameters.
+\begin{block}{Translation component}
+$\dot p_O^{H,*}=K_p\bigl(p_H^*(\tilde u_R)-p_O\bigr)$, where $p_H^*$ is the inferred target position and $K_p$ is the translation response gain.
 \end{block}
 \column{0.48\textwidth}
-\begin{block}{Rotation model}
-$R_O$: current orientation; $R_H^*$: inferred target orientation; $\omega_O^{H,*}$: desired angular velocity; $K_{\mathrm{rot}}$: rotation gain; $f_{\mathrm{rot}}$: mapping from orientation error to angular velocity.
+\begin{block}{Rotation component}
+$\omega_O^{H,*}=K_{\mathrm{rot}}e_R(R_O,R_H^*)$, where $R_H^*$ is the inferred target orientation and $e_R$ converts orientation error to a 3D rotation vector.
 \end{block}
 \end{columns}
-\vspace{0.15cm}
-\begin{alertblock}{Difference from Options A and B}
-Option A models a horizon cost, and Option B predicts a full desired path. Option C predicts the desired velocity at the current state, so it is lighter online but less expressive about long-term tradeoffs.
-\end{alertblock}
-
-\pinkcomment{why only consider rotation? should we consider a more general case?}
-% Response: We should consider the full rigid-object pose, not rotation alone. The first equation
-% dot{x}_O^{H,*}=f_H(x_O,c;theta_H) is the general state-space model and can include translation,
-% rotation, linear/angular velocity, and other object states. Rotation is shown separately because
-% orientation lies on SO(3) and is not handled by ordinary Euclidean subtraction like position.
-% A clearer revision would present an SE(3) pose model with position and orientation components.
-\greencomment{ Please do necessary modifcations to avoid the possible misunderstanding shown in pink comments.}
 \end{frame}
 
 \begin{frame}{Option C: Training and online inference}
 \begin{columns}[T,onlytextwidth]
 \column{0.48\textwidth}
 \begin{block}{Training without parameter labels}
-Fit the likelihood of observed object motion using constrained system identification. The desired pose and response gains are latent variables rather than manually labeled quantities.
+Fit the likelihood of observed object motion under diverse robot actions using constrained system identification. The desired pose and response gains are latent variables rather than manually labeled quantities.
 \end{block}
 \column{0.48\textwidth}
 \begin{block}{Switching between local models}
@@ -517,74 +579,6 @@ Constrain $f_H$ so the predicted motion remains stable, feasible for the shared 
 Related: constraint-aware dynamical-system intent estimation with particle filtering (Shao et al., 2024).
 \end{frame}
 
-\begin{frame}{Option D predicts responses to candidate robot actions}
-\begin{columns}[c,onlytextwidth]
-\column{0.43\textwidth}
-\begin{block}{Passive prediction}
-\[
-p(u^H_{t:t+H}\mid h_t,c)
-\]
-\centering What will the human do next?
-\end{block}
-\column{0.08\textwidth}
-\centering\Large\textcolor{orange}{$\Longrightarrow$}
-\column{0.49\textwidth}
-\begin{alertblock}{Interactive response model}
-\[
-p_\psi(u^H_{t:t+H}\mid h_t,c,u^R_{t:t+H})
-\]
-\centering How will the human respond if the robot executes this candidate action?
-\end{alertblock}
-\end{columns}
-\vspace{0.28cm}
-\begin{itemize}
-  \item $p(\cdot\mid\cdot)$ is a conditional distribution; $h_t$ is recent history, $c$ is task context, and $H$ is the prediction horizon.
-  \item $u^H$: future interaction-wrench/action sequence; $u^R$: candidate robot action sequence.
-  \item A diffusion/sequence model can represent multiple responses and role switches.
-  \item It is predictive, but intention remains implicit unless the model also exposes a goal, trajectory, or preference variable.
-\end{itemize}
-\end{frame}
-
-\begin{frame}[shrink=4]{Option D versus Diffusion Co-Policy}
-\begin{columns}[T,onlytextwidth]
-\column{0.48\textwidth}
-\begin{block}{Diffusion Co-Policy}
-\[
-p_\psi(u_{t:t+H}^H,u_{t:t+H}^R\mid h_t,c)
-\]
-\begin{itemize}
-  \item jointly generates human and robot action sequences;
-  \item directly imitates collaborative demonstrations;
-  \item captures multimodality and role switching.
-\end{itemize}
-\end{block}
-\column{0.48\textwidth}
-\begin{block}{Human response model}
-\[
-p_\psi(u_{t:t+H}^H\mid h_t,c,\tilde u_{t:t+H}^R,z_H)
-\]
-\begin{itemize}
-  \item $\psi$ denotes learned model parameters;
-  \item evaluates each candidate robot action $\tilde u^R$;
-  \item keeps planning and safety modular;
-  \item can expose an intent variable $z_H$.
-\end{itemize}
-\end{block}
-\end{columns}
-\vspace{0.18cm}
-\begin{alertblock}{Tradeoff}
-The response model supports counterfactual planning, but needs diverse robot-action coverage and calibrated out-of-distribution uncertainty.
-\end{alertblock}
-\pinkcomment{This looks like NPACE? as NPACE looks also consider how human accmondate the robot behaviors}
-% Response: They share the closed-loop idea but are not the same model. N-PACE is structured and
-% game-theoretic: it assumes parameterized costs/policies, estimates peer cost parameters online,
-% and models how the peer updates its belief about the robot. Option D is a data-driven predictor
-% p(u^H | history, context, candidate u^R); it can predict accommodation without identifying a
-% cost or specifying a human learning law. They can be combined: N-PACE supplies interpretable
-% intent/learning structure, while Option D supplies a learned prior or residual response model.
-\greencomment{mention your explainations while we introduction the human response prediction in the new slides}
-\end{frame}
-
 \begin{frame}[shrink=4]{Each representation serves a different modeling layer}
 \scriptsize
 \centering
@@ -594,15 +588,15 @@ The response model supports counterfactual planning, but needs diverse robot-act
 Representation & Control interface & Key strength & Main weakness & Best use \\
 \midrule
 Interaction primitive & Latent mode $z_H$ & Cross-task structure & Needs mode discovery & Task-phase inference \\
-Desired trajectory & Reference $\xi_H^*$ & Direct and visual & Misses preferences and robot influence & Shared-object MPC \\
+Response layer & $p(u_H\mid \tilde u_R,z_H)$ & Models accommodation & Needs diverse robot actions & Candidate-action evaluation \\
 Cost / preferences & $J_H,\,w_H,\,\phi$ & Interpretable and game-compatible & Identifiability and feature design & Negotiation and tradeoffs \\
+Desired trajectory & Reference $\xi_H^*$ & Direct and visual & Needs robot-action coverage & Shared-object MPC \\
 Dynamical system & $f_H(x;\theta_H)$ & Lightweight online inference & Limited global multimodality & Local coordination \\
-Response distribution & $p(u_H\mid u_R)$ & Flexible and interactive & Intention may remain implicit & Candidate-action evaluation \\
 \bottomrule
 \end{tabularx}
 \vspace{0.32cm}
 \begin{alertblock}{Proposed position}
-Use structured intention variables as the control interface, while a learned response model captures multimodality, bounded rationality, and model mismatch.
+Use the learned response layer to condition each structured intention interface on candidate robot actions; retain cost, trajectory, or local dynamics as the interpretable input to control.
 \end{alertblock}
 \end{frame}
 
@@ -618,10 +612,10 @@ Use structured intention variables as the control interface, while a learned res
 ]
 \node[box,text width=3.0cm] (obs) {Observations\\motion + interaction wrench + context};
 \node[learned,text width=2.75cm,right=of obs] (mode) {Interaction primitive\\$z_H=(m,g,v,\rho)$};
-\node[box,text width=3.4cm,right=of mode] (intent) {Control-relevant intention\\$\xi_H^*$ / $f_H(\theta_H)$ / $w_H^\top\phi_\psi$};
-\node[learned,text width=3.4cm,right=of intent] (resp) {Human response model\\$p(u_H\mid h,c,\tilde u_R,z_H)$};
-\node[control,text width=2.9cm,right=of resp] (plan) {N-PACE / MPC\\robot action $u_R$};
-\draw[arr] (obs)--(mode); \draw[arr] (mode)--(intent); \draw[arr] (intent)--(resp); \draw[arr] (resp)--(plan);
+\node[learned,text width=3.4cm,right=of mode] (resp) {Human response model\\$p(u_H\mid h,c,\tilde u_R,z_H)$};
+\node[box,text width=3.4cm,right=of resp] (intent) {A--C control interface\\$w_H^\top\phi_\psi$ / $\xi_H^*$ / $f_H(\theta_H)$};
+\node[control,text width=2.9cm,right=of intent] (plan) {N-PACE / MPC\\robot action $u_R$};
+\draw[arr] (obs)--(mode); \draw[arr] (mode)--(resp); \draw[arr] (resp)--(intent); \draw[arr] (intent)--(plan);
 \end{tikzpicture}}
 \vspace{0.35cm}
 \begin{columns}[T,onlytextwidth]
@@ -644,12 +638,7 @@ Current primitive, desired motion, preference weights, and person-specific respo
   \item task/interaction encoders from multi-person data;
   \item trajectory modes and residual cost features;
   \item robot-action-conditioned response model;
-  \item calibrated uncertainty on held-out people. \pinkcomment{cannot understand}
-  % Response: This means the model's confidence should be tested on participants not used for
-  % training. If it reports an 80 percent prediction region, the true action should fall inside it
-  % about 80 percent of the time for unseen people. A clearer visible phrase is:
-  % ``uncertainty estimates validated on unseen participants.''
-  \greencomment{change the original words to some words that is easier for me to understand}
+  \item uncertainty estimates tested on unseen participants;
 \end{itemize}
 \end{block}
 \column{0.48\textwidth}
@@ -662,36 +651,6 @@ Current primitive, desired motion, preference weights, and person-specific respo
 \end{itemize}
 \end{block}
 \end{columns}
-\end{frame}
-
-\begin{frame}{Bayesian personalization from physical interaction}
-\begin{block}{Update equation}
-\[
-b_{t+1}(\eta_H)\propto
-p(y_{t+1}\mid h_t,c,u_t^R,\eta_H)\,b_t(\eta_H)
-\]
-\end{block}
-\begin{columns}[T,onlytextwidth]
-\column{0.48\textwidth}
-\begin{block}{Belief and latent variables}
-$\eta_H=(z_H,\theta_H,w_H)$ collects the human primitive, desired-motion parameters, and preference weights. $b_t(\eta_H)$ is the robot's current belief over them.
-\end{block}
-\column{0.48\textwidth}
-\begin{block}{New physical evidence}
-$y_{t+1}=(\mathbf w_t^{\mathrm{int,obs}},x_{t+1}^O)$ combines the observed wrench and next object state. $u_t^R$ is the executed robot action; $p(\cdot)$ scores how well each human model explains the evidence.
-\end{block}
-\end{columns}
-\vspace{0.15cm}
-\begin{alertblock}{Interpretation}
-$\propto$ means: multiply the prior belief by the likelihood of the new observation, then normalize. Models that better predict the human--robot interaction receive more probability.
-
-\end{alertblock}
-\pinkcomment{consider putting this page into backup}
-% Response: Agreed. The Bayesian equation is implementation detail and can be moved to backup.
-% The main deck only needs the message that a population prior is updated online from observed
-% wrench and object motion. The equation remains useful if he asks how personalization is
-% implemented mathematically.
-\greencomment{please do so}
 \end{frame}
 
 \begin{frame}[shrink=5]{Data collection supplies weak and self-supervision}
@@ -729,12 +688,7 @@ Use accessible human--human demonstrations for pretraining, then collect human--
 Collaborative object transport with:
 \begin{itemize}
   \item two feasible paths around an obstacle;
-  \item translation--rotation tradeoffs; \pinkcomment{did not introduced before in the slides}
-  % Response: Correct. Earlier slides mention coordinated translation and rotation but do not
-  % explain a tradeoff. One route may require shorter translation but larger table rotation, while
-  % another may be longer but require less rotation. Either explain this on the reference-task
-  % slide or replace the bullet with ``coordinated translation and rotation around obstacles.''
-  \greencomment{do something ether introduce before or use other words}
+  \item coordinated translation and rotation around obstacles;
   \item changing leader/follower roles;
   \item synchronized object state and 6D interaction wrench.
 \end{itemize}
@@ -742,10 +696,10 @@ Collaborative object transport with:
 \column{0.48\textwidth}
 \begin{block}{Model comparison}
 \begin{enumerate}
-  \item desired-trajectory prediction;
-  \item fixed-feature IOC / cost inference;
-  \item switching dynamical-system inference;
-  \item interactive response model;
+  \item passive structured baselines (A--C);
+  \item response-conditioned cost inference;
+  \item response-conditioned desired trajectory;
+  \item response-conditioned local dynamics;
   \item hierarchical hybrid model.
 \end{enumerate}
 \end{block}
@@ -799,7 +753,7 @@ Compare control-relevant human intention representations for physical collaborat
 \end{itemize}
 \vspace{0.12cm}
 \begin{alertblock}{Recommended starting scope}
-Begin with desired-trajectory and cost/preference baselines, then add robot-action-conditioned response prediction as the learned component.
+Begin with passive versus response-conditioned cost and desired-trajectory models; add local dynamics after validating the shared response layer.
 \end{alertblock}
 \end{frame}
 
@@ -815,6 +769,29 @@ Begin with desired-trajectory and cost/preference baselines, then add robot-acti
 \vspace{0.35cm}
 {\color{muted}\large Longer-term subprojects in sensing, control, and cross-task generalization}\par
 \vfill
+\end{frame}
+
+\begin{frame}{Notation used throughout the discussion}
+\begin{columns}[T,onlytextwidth]
+\column{0.48\textwidth}
+\begin{block}{Indices and agents}
+\begin{itemize}
+  \item $t$: current time; $k$: a time inside the prediction horizon;
+  \item $H$: number of future steps being predicted;
+  \item superscripts $O$, $H$, and $R$: object, human, and robot.
+\end{itemize}
+\end{block}
+\begin{block}{Signals}
+$x$: state or pose; $u$: action or force command; $\mathbf w^{\mathrm{int}}$: measured interaction wrench.
+\end{block}
+\column{0.48\textwidth}
+\begin{block}{Model inputs}
+$h_t$: recent interaction history up to time $t$; $c$: task context, including goal, geometry, object properties, and constraints.
+\end{block}
+\begin{block}{Model notation}
+$p(a\mid b)$: distribution of $a$ given $b$; $\psi$: learned model parameters; $*$: desired or latent quantity; $\dot{x}$: time derivative of $x$. PACE means Peer-Aware Cost Estimation; N-PACE is its nonlinear extension.
+\end{block}
+\end{columns}
 \end{frame}
 
 \begin{frame}{Additional notation used in the subprojects}
@@ -834,6 +811,29 @@ $u_R^*$: selected robot action sequence; $J_R$: robot planning cost; $\mathbb E$
 $x_t$: system state; $h_t$: recent history; $c$: task context. Superscripts $H$ and $R$ denote human and robot quantities.
 \end{block}
 \end{columns}
+\end{frame}
+
+\begin{frame}{Bayesian personalization from physical interaction}
+\begin{block}{Update equation}
+\[
+b_{t+1}(\eta_H)\propto
+p(y_{t+1}\mid h_t,c,u_t^R,\eta_H)\,b_t(\eta_H)
+\]
+\end{block}
+\begin{columns}[T,onlytextwidth]
+\column{0.48\textwidth}
+\begin{block}{Belief and latent variables}
+$\eta_H=(z_H,\theta_H,w_H)$ collects the human primitive, desired-motion parameters, and preference weights. $b_t(\eta_H)$ is the robot's current belief over them.
+\end{block}
+\column{0.48\textwidth}
+\begin{block}{New physical evidence}
+$y_{t+1}=(\mathbf w_t^{\mathrm{int,obs}},x_{t+1}^O)$ combines the observed wrench and next object state. $u_t^R$ is the executed robot action; $p(\cdot)$ scores how well each human model explains the evidence.
+\end{block}
+\end{columns}
+\vspace{0.15cm}
+\begin{alertblock}{Interpretation}
+$\propto$ means: multiply the prior belief by the likelihood of the new observation, then normalize. Models that better predict the human--robot interaction receive more probability.
+\end{alertblock}
 \end{frame}
 
 \begin{frame}{SP1: Build the physical evidence base}

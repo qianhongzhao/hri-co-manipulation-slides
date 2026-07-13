@@ -163,6 +163,10 @@
   
 \end{frame}}
 
+\begin{frame}{Frame Title}
+    \pinkcomment{Add one page to show the contents of today, including (problem definitions), (take away from shared papers), (proposed framework), ( details to push the projects) you have the freedom to consider the most proper wordings of each block}
+\end{frame}
+
 \begin{frame}{Reference task: Collaborative table carrying}
 \begin{columns}[T,onlytextwidth]
 \column{0.48\textwidth}
@@ -187,6 +191,8 @@
 \begin{alertblock}{Why an explicit human model is needed}
 Diffusion Co-Policy maps history to joint actions, leaving intention implicit. An explicit model exposes intent, tests candidate robot actions, and connects prediction to planning and safety. A hybrid preserves learned flexibility.
 \end{alertblock}
+
+\pinkcomment{Question: I have a question, what if the  historical data not available? pure rely on online adaptation? what should the behaviors of the robot during the initial stage of online adaptation? you may use comment to answer}
 \end{frame}
 
 \begin{frame}{Human intention is hidden but control-relevant}
@@ -278,7 +284,7 @@ Output: $z_H=(m,g,v,\rho)$, describing the current phase, local goal, speed/forc
 \centering\textcolor{orange}{\Large$\Downarrow$}
 \vspace{0.04cm}
 \begin{block}{Shared response layer: accommodation to robot actions}
-Predict $p_\psi(u_H\mid h_t,c,\tilde u_R,z_H)$: how the human may respond to each candidate robot action $\tilde u_R$; $\psi$ denotes learned parameters.
+Predict $p_\psi(u_H\mid h_t,c,\tilde u_R,z_H)$: how the human may respond to each candidate robot action $\tilde u_R$; $\psi$ denotes learned parameters. 
 \end{block}
 \centering\textcolor{orange}{\Large$\Downarrow$}
 \vspace{0.04cm}
@@ -288,7 +294,7 @@ Predict $p_\psi(u_H\mid h_t,c,\tilde u_R,z_H)$: how the human may respond to eac
 Response-conditioned cost $J_H(u_R)$ and preference weights $w_H$.
 \end{block}
 \column{0.32\textwidth}
-\begin{block}{B. Desired motion}
+\begin{block}{B. Desired object motion}
 Response-conditioned goal, path mode, or trajectory $\xi_H^*$.
 \end{block}
 \column{0.32\textwidth}
@@ -296,6 +302,8 @@ Response-conditioned goal, path mode, or trajectory $\xi_H^*$.
 Response-conditioned vector field $f_H(x^O,\tilde u_R;\theta_H)$.
 \end{block}
 \end{columns}
+\pinkcomment{ 1. Question. horzontally, A, B, C are too corowded. (whether it is feasible only keep A and B here and move C to backup? As it is realtoive vague and not revlent to the paper he shareed)
+2. here, mention from the frame work, the above two are novelities and the bottom three will be the possible settings in details. 3. also mention notations will be discussed in the followed pages.}
 \end{frame}
 
 \begin{frame}{How the intention representations will be evaluated}
@@ -337,7 +345,7 @@ where $\mathcal M_{\mathrm{int}}$ includes translate, rotate, hold, align, inser
 Different tasks reuse a small vocabulary: transport may be \emph{translate--rotate--align}; insertion may be \emph{approach--align--hold--insert}.
 \end{exampleblock}
 \begin{alertblock}{Initial primitive vocabulary}
-Start with six object-level modes: translate, rotate, hold, align, insert, and yield. They are defined by distinct motion/force patterns, not by a specific task name.
+Start with six object-level modes: translate, rotate, hold, align, insert, and yield. They are defined by distinct motion/force patterns, not by a specific task name. \pinkcomment{could be useful especially you mentioned factory setting}
 \end{alertblock}
 \end{columns}
 \end{frame}
@@ -387,6 +395,7 @@ p_\psi(u^H_{t:t+H}\mid h_t,c,\tilde u^R_{t:t+H},z_H)
   \item $\tilde u^R$: candidate robot action sequence; $u^H$: predicted human response.
   \item The output conditions Options A--C; it is not a separate high-level intention by itself.
 \end{itemize}
+\pinkcomment{Question: In this layer, GT could also be used right? poential directions needs to be disucsss?}
 \end{frame}
 
 \begin{frame}{Response prediction complements Co-Policy and N-PACE}
@@ -757,7 +766,9 @@ Begin with passive versus response-conditioned cost and desired-trajectory model
 \end{alertblock}
 \end{frame}
 
-
+\begin{frame}{Frame Title}
+\pinkcomment{add a ty page to remind me this is the end of the main deck.}
+\end{frame}
 
 
 

@@ -322,11 +322,13 @@ Response-conditioned cost $J_H(u_R)$ and preference weights $w_H$.
 Response-conditioned goal, path mode, or trajectory $\xi_H^*$.
 \end{block}
 \end{columns}
-\pinkcomment{move the second arrow in the middle of the page horzontally  delete "Notation is introduced on the following slides."}
+\pinkcomment{move the second arrow in the middle of the page horzontally  delete "Notation is introduced on the following slides."} 
 % Assistant response: Agreed. The second arrow should be centered between Core Contribution 2 and
 % the two realization boxes. It appears beside the heading because the arrow is not terminated by an
 % explicit paragraph break; adding \par after \Downarrow will center it on its own line. The notation
 % sentence can be deleted because each symbol is already defined on the following technical slides.
+
+\greencomment{plz address}
 % User question: A, B, and C look crowded horizontally. Is it better to retain only A and B in the
 % main deck and move C to backup because C is relatively vague and less connected to the shared papers?
 % Assistant response: Yes, that is the stronger meeting version. A is directly connected to the
@@ -466,6 +468,7 @@ Use N-PACE for interpretable intent and peer-learning structure; use the learned
 % Without this page, Option A and the later N-PACE connection appear less motivated. Present it briefly
 % (about 30--45 seconds). If the main deck must be shortened further, merge its central comparison into
 % the preceding response-layer slide and move only the expanded three-column comparison to backup.
+\greencomment{Do not need to underline the matchness with copolicy, looks they are not very interested in diffusion compare to blocked structure, but can mention the weakness of copolicy here to highlight the value of human intention model}
 \end{frame}
 
 \begin{frame}{Option A: Infer the human's objective}
@@ -582,6 +585,8 @@ The desired motion is a low-level reference for shared-object model predictive c
 % shared-object MPC; sampling-based MPPI is one candidate solver for multimodal interactive rollouts."
 % Cost/model uncertainty should additionally be handled with ensembles or risk-sensitive objectives,
 % physical constraints, and an independent safety filter.
+
+\greencomment{keep current version as it is, remove pink question in comments( not visible in pdf)}
 \end{alertblock}
 \vspace{0.12cm}
 Related: Townsend et al. (2017); Franceschi et al. (2023).
@@ -601,9 +606,11 @@ Cost / preferences & $J_H,\,w_H,\,\phi$ & Interpretable and game-compatible & Id
 Desired trajectory & Reference $\xi_H^*$ & Direct and visual & Needs robot-action coverage & Shared-object MPC \\
 \bottomrule
 \end{tabularx}
+\greencomment{make "Interaction primi-
+tive" in one single line current version looks not good}
 \vspace{0.32cm}
 \begin{alertblock}{Proposed position}
-Use the learned response layer to condition both intention interfaces on candidate robot actions; retain either cost/preferences or desired trajectory as the interpretable input to control.
+Use the learned response layer to condition both intention interfaces on candidate robot actions; retain either cost/preferences or desired trajectory as the interpretable input to control \greencomment{mention primitive could be a tentive version, in the future, this can be formed as more veritaile model that doesn't need predefine several initial primitives}
 \end{alertblock}
 \end{frame}
 
@@ -769,9 +776,9 @@ Compare passive and response-conditioned versions of A and B, then test a hybrid
 \vfill
 {\color{navy}\LARGE\bfseries Thank you}\par
 \vspace{0.35cm}
-{\color{darkgray}\large Discussion}\par
-\vspace{0.55cm}
-{\color{muted}\normalsize Which human representation is most useful for safe, responsive co-manipulation?}\par
+% {\color{darkgray}\large Discussion}\par
+% \vspace{0.55cm}
+% {\color{muted}\normalsize Which human representation is most useful for safe, responsive co-manipulation?}\par
 \vfill
 \end{frame}
 }

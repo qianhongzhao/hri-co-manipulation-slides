@@ -2,6 +2,7 @@
 
 \usepackage{amsmath,amssymb,bm}
 \usepackage{booktabs}
+\usepackage{tabularx}
 \usepackage{tikz}
 \usepackage{xcolor}
 \usetikzlibrary{arrows.meta,positioning,fit}
@@ -58,8 +59,8 @@
     \footnotesize\textbf{Expected paper:} #1
   \end{beamercolorbox}}
 
-\title{Generalizable Human Modeling for\\Physical Human--Robot Co-Manipulation}
-\subtitle{Connecting multimodal interaction, structured human models,\\and safe robot planning and control}
+\title{Human Intention Modeling for\\Physical Human--Robot Co-Manipulation}
+\subtitle{Control-relevant representations, inference methods,\\and an initial experimental study}
 \author{Qianhong Zhao}
 \date{Research Discussion with RISE Lab}
 
@@ -68,220 +69,399 @@
 {\setbeamertemplate{footline}{}
 \begin{frame}[plain]
   \begin{tikzpicture}[remember picture,overlay]
-    \fill[navy] (current page.south west) rectangle (current page.north east);
-    \fill[orange] (current page.north west) rectangle ([xshift=0.22cm]current page.south west);
-    \draw[orange,line width=1.2pt] ([xshift=1.0cm,yshift=-2.12cm]current page.north west) -- ([xshift=-1.0cm,yshift=-2.12cm]current page.north east);
+    \fill[warmgray] (current page.south west) rectangle (current page.north east);
+    \fill[orange] (current page.north west) rectangle ([xshift=0.18cm]current page.south west);
+    \fill[navy] ([xshift=0.82cm,yshift=-0.88cm]current page.north west)
+      rectangle ([xshift=0.98cm,yshift=-3.35cm]current page.north west);
   \end{tikzpicture}
-  \vspace{0.95cm}
-  {\color{white}\fontsize{20.5}{25}\selectfont\bfseries
-  Generalizable Human Modeling for\\[0.12cm]
-  Physical Human--Robot Co-Manipulation\par}
+  \vspace{0.72cm}
+  \hspace{0.78cm}{\color{navy}\fontsize{17.5}{22}\selectfont\bfseries
+  Human Intention Modeling for\\[0.12cm]
+  \hspace{0.78cm}Physical Human--Robot Co-Manipulation\par}
   \vspace{0.55cm}
-  {\color{white}\fontsize{14}{18}\selectfont
-  Connecting multimodal interaction, structured human models,\\
-  and safe robot planning and control\par}
+  \hspace{0.78cm}{\color{darkgray}\fontsize{13}{17}\selectfont
+  Control-relevant representations, inference methods,\\
+  \hspace{0.78cm}and an initial experimental study\par}
   \vfill
-  {\color{white}\normalsize Qianhong Zhao\par}
+  \hspace{0.78cm}{\color{navy}\normalsize\textbf{Qianhong Zhao}\par}
   \vspace{0.12cm}
-  {\color{white!72}\small Research Discussion with RISE Lab\par}
+  \hspace{0.78cm}{\color{muted}\small Research Discussion with RISE Lab\par}
   \vspace{0.52cm}
-
-  \textcolor{pink}{1. Background color needs to be replaced to some light color. Do not includ too much blue;
-  2. The origin line breaks the title. Use another method to underline the title
-  }
 \end{frame}}
 
-\begin{frame}[shrink=6]{Co-manipulation requires coordination through human uncertainty}
+\begin{frame}{Human intention is hidden but control-relevant}
 \begin{columns}[T,onlytextwidth]
-  \column{0.52\textwidth}
-  \begin{block}{Physical co-manipulation}
-  A human and a robot physically manipulate a shared object to accomplish a common task safely and efficiently.
-  \end{block}
-  \vspace{0.15cm}
-  \textbf{The robot must simultaneously:}
+  \column{0.50\textwidth}
+  \begin{block}{What the robot observes}
   \begin{itemize}
-    \item infer the human's intent and interaction strategy;
-    \item predict responses to robot actions;
-    \item coordinate motion and interaction forces;
-    \item adapt to individual behavior and strategy changes;
-    \item satisfy physical, actuation, and safety constraints.
+    \item object pose and velocity $x_t^O$;
+    \item interaction wrench $F_t^H$;
+    \item human/robot motion and recent actions;
+    \item task geometry, goal, and constraints $c$.
   \end{itemize}
-
-  \column{0.44\textwidth}
-  \begin{alertblock}{Central research question}
-  How can the robot model the human well enough to support real-time planning and control? \textcolor{pink}{How to model the human well enough to support real-time planning and control of robot in comipulation tasks? }
-  \end{alertblock}
-  \vspace{0.25cm}
-  \begin{exampleblock}{Desired outcome}
-  An explicit human model that is predictive, interactive, uncertainty-aware, and adaptable online.
-  \end{exampleblock}
+  \end{block}
+  \column{0.46\textwidth}
+  \begin{block}{What remains hidden}
+  \begin{itemize}
+    \item desired object motion or local goal;
+    \item leader/follower role and compliance;
+    \item effort, force, and safety preferences;
+    \item responses to possible robot actions.
+  \end{itemize}
+  \end{block}
 \end{columns}
-
-\textcolor{pink}{1. why explicit human model? if we introduce the complex models for the features of the potential cost functions, how can this model be explicit?
-2. current title needs to be modified. the title looks not complete}
+\vspace{0.25cm}
+\begin{alertblock}{Central question}
+How should human intention be represented and inferred so that it improves real-time robot planning and control in physically coupled tasks?
+\end{alertblock}
 \end{frame}
 
-\begin{frame}{Human behavior is structured, adaptive, and bounded-rational}
+\begin{frame}{A useful model must resolve four uncertainties}
 \begin{columns}[T,onlytextwidth]
 \column{0.48\textwidth}
 \begin{itemize}
-  \item \key{Multimodal}: multiple strategies may be reasonable in the same situation. \textcolor{pink}{ Should multimodal be the  different data types input for the model}
-  \item \key{Interactive}: behavior depends on what the robot does.
-  \item \key{Bounded-rational}: people may be delayed, inconsistent, or effort-limited.
+  \item \key{Behavioral multimodality}: the same state may admit several valid goals, paths, or roles.
+  \item \key{Partial observability}: motion and force provide indirect, sometimes conflicting evidence.
 \end{itemize}
 \column{0.48\textwidth}
 \begin{itemize}
-  \item \key{Adaptive}: people infer the robot's intent and change their behavior.
-  \item \key{Person-dependent}: roles, preferences, and control styles differ.
-  \item \key{Task-conditioned}: concrete goals change, but some latent concepts transfer.
+  \item \key{Closed-loop interaction}: the human responds to the robot and may change strategy.
+  \item \key{Bounded rationality}: actions may be delayed, noisy, effort-limited, or non-optimal.
 \end{itemize}
 \end{columns}
 \vspace{0.35cm}
-\begin{block}{Implication}
-A useful model must distinguish human intent, interaction style, adaptation, and action uncertainty---without requiring a separate model for every task. 
+\begin{block}{Terminology}
+``Multimodal sensing'' means multiple input types (motion, wrench, vision). ``Multimodal behavior'' means multiple plausible future human strategies. The two are different.
 \end{block}
 \end{frame}
 
-\begin{frame}{The shared papers provide complementary foundations}
+\begin{frame}[shrink=5]{Shared papers show intention modeling is feasible}
 \small
 \begin{columns}[T,onlytextwidth]
 \column{0.315\textwidth}
 \begin{block}{Diffusion Co-Policy}
 \begin{itemize}
-  \item Learns multimodal collaborative action sequences \textcolor{pink}{1. looks the input of this paper is "人的输入 a
-t
-H
-	​
-
-：二维力，2D
-机器人的输入 a
-t
-R
-	​
-
-：二维力，2D
-联合系统输入 a
-t
-	​
-
-：四维，4D", why you say multimodal.? 2. mention this paper offers the desired test setting for the projects} 
-  \item Demonstrates mutual adaptation and role switching
-  \item Works with real humans in collaborative carrying
+  \item Generates multiple plausible joint force/action sequences
+  \item Demonstrates adaptation and role switching
+  \item Provides a relevant physical collaborative-transport setting
 \end{itemize}
 \end{block}
 \column{0.315\textwidth}
 \begin{block}{Bounded-Rational Model}
 \begin{itemize}
-  \item Models human joint action game-theoretically
-  \item Fits behavior better with bounded rationality 
-  \item Reveals leadership and adaptation effects
+  \item Shows joint human actions can be represented by a game model
+  \item Bounded rationality fits observed behavior better
+  \item Leadership and adaptation affect performance
 \end{itemize}
-
-\textcolor{pink}{Here needs to mention that this paper convince people that human intention could be modeled through gametheory}
 \end{block}
 \column{0.315\textwidth}
 \begin{block}{PACE / N-PACE}
 \begin{itemize}
-  \item Infers intent and cost parameters online
+  \item Estimates intent/cost parameters online
   \item Treats the peer as another adapting learner
-  \item Connects inference with interaction policies
-\end{itemize}
-\textcolor{pink}{Here needs to mention that this paper convince people that the comanipulation problem could be solved or solved better based on gametheory and reasonable human inention model}
-\end{block}
-\end{columns}
-\vspace{0.28cm}
-\begin{alertblock}{Combined insight}
-Learned models provide behavioral flexibility; game-theoretic models provide structure, interpretability, and a connection to control. 
-\end{alertblock}
-\end{frame}
-
-\begin{frame}{A human-modeling gap remains in physical interaction}
-\begin{columns}[T,onlytextwidth]
-\column{0.48\textwidth}
-\begin{block}{Learned co-policies}
-\begin{itemize}
-  \item Model the human mostly implicitly
-  \item Often require task-specific demonstrations
-  \item Do not explicitly represent intent, belief, or preference
-  \item Offer limited physical and safety guarantees
-\end{itemize}
-\end{block}
-\column{0.48\textwidth}
-\begin{block}{Game / IOC models}
-\begin{itemize}
-  \item Require predefined cost features
-  \item Often assume known intent or learning structures
-  \item Struggle with multimodal, history-dependent behavior
-  \item May require redesign when the task changes
+  \item Shows a reasonable peer model can improve interaction policies
 \end{itemize}
 \end{block}
 \end{columns}
 \vspace{0.25cm}
-\begin{alertblock}{Research gap}
-Physical co-manipulation needs an explicit but flexible human model that connects motion, force/torque, and task context to robot planning and control.
+\begin{alertblock}{Combined insight}
+Human intention is modelable and useful for control; the unresolved question is which representation is sufficiently expressive, identifiable, and transferable.
 \end{alertblock}
 \end{frame}
 
-\begin{frame}{Predict human responses to candidate robot actions}
-\begin{columns}[c,onlytextwidth]
+\begin{frame}{Four control-relevant intention representations}
+\small
+\begin{columns}[T,onlytextwidth]
+\column{0.48\textwidth}
+\begin{block}{Goal / desired object trajectory}
+Output: a terminal object pose, path mode, or desired trajectory $\xi_H^*$.
+\end{block}
+\begin{block}{Cost and preferences}
+Output: features $\phi$ and weights $w_H$ describing progress, effort, force, and safety tradeoffs.
+\end{block}
+\column{0.48\textwidth}
+\begin{block}{Local dynamical system}
+Output: a human-intended vector field $f_H(x^O;\theta_H)$ over object motion.
+\end{block}
+\begin{block}{Interactive response distribution}
+Output: possible human wrench/action responses conditioned on candidate robot actions.
+\end{block}
+\end{columns}
+\vspace{0.12cm}
+\begin{alertblock}{Selection criteria}
+Identifiability, predictive accuracy, real-time control utility, and transfer across tasks.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Option A: Predict the human's desired object motion}
+\begin{columns}[T,onlytextwidth]
+\column{0.52\textwidth}
+\begin{block}{Desired trajectory model}
+\[
+p_\psi(\xi_H^*\mid h_t,c),\qquad
+\xi_H^*=\{x_{O,k}^{H,*}\}_{k=t}^{t+H}
+\]
+$h_t$ contains recent object/human/robot motion and interaction wrench; $c$ contains task goal, geometry, object, and constraints.
+\end{block}
+\textbf{Possible outputs}
+\begin{itemize}
+  \item terminal pose or waypoint;
+  \item discrete path/strategy mode;
+  \item distribution over full desired trajectories.
+\end{itemize}
 \column{0.44\textwidth}
+\begin{exampleblock}{Why it is attractive}
+Directly useful as a reference for shared-object MPC; easier to label and visualize than latent cost parameters.
+\end{exampleblock}
+\begin{alertblock}{Main challenges}
+Multiple valid trajectories; changing intention; passive prediction ignores robot influence.
+\end{alertblock}
+\textbf{Possible solution:} mode-conditioned Transformer/diffusion prediction with receding-horizon updates.
+\end{columns}
+\end{frame}
+
+\begin{frame}{Option B infers what the human is optimizing}
+\begin{columns}[T,onlytextwidth]
+\column{0.52\textwidth}
+\begin{block}{Task-conditioned latent cost}
+\[
+J_H=\sum_{k=t}^{t+H}{w_k^H}^{\!\top}
+\phi_\psi(x_k^O,u_k^H,u_k^R,c)
+\]
+\begin{itemize}
+  \item shared features: progress, pose, effort, interaction force, safety, smoothness, coordination;
+  \item online variables: person-specific preference weights $w_H$;
+  \item learned features $\phi_\psi$ complement known physical features.
+\end{itemize}
+\end{block}
+\column{0.44\textwidth}
+\begin{exampleblock}{Why it is attractive}
+Interpretable tradeoffs and a direct connection to game-theoretic planning, IOC, PACE, and N-PACE.
+\end{exampleblock}
+\begin{alertblock}{Main challenges}
+Non-identifiability, semantic drift in learned features, and approximate human optimality.
+\end{alertblock}
+\textbf{Possible solution:} structured feature dictionary + learned residual features + Bayesian weight inference + informative robot probing.
+\end{columns}
+\end{frame}
+
+\begin{frame}[shrink=4]{Option C: Model intention as a local vector field}
+\begin{columns}[T,onlytextwidth]
+\column{0.52\textwidth}
+\begin{block}{Human-intended dynamical system}
+\[
+\dot{x}_O^{H,*}=f_H(x_O,c;\theta_H)
+\]
+For a simple attractor model:
+\[
+\dot p_O^{H,*}=K_p(p_H^*-p_O),\qquad
+\omega_O^{H,*}=f_R(R_O,R_H^*;K_R)
+\]
+$\theta_H=(p_H^*,R_H^*,K_p,K_R)$ represents desired pose and response aggressiveness.
+\end{block}
+\column{0.44\textwidth}
+\begin{exampleblock}{Why it is attractive}
+No assumption that the human solves a complete optimal-control problem; parameters can be updated from local motion and wrench evidence.
+\end{exampleblock}
+\begin{alertblock}{Main challenges}
+A single vector field cannot represent branching paths, abrupt switches, or complex obstacle-dependent behavior.
+\end{alertblock}
+\textbf{Possible solution:} mixture of stable dynamical systems with a switching latent mode and context-conditioned parameters.
+\end{columns}
+\end{frame}
+
+\begin{frame}{Option D predicts responses to candidate robot actions}
+\begin{columns}[c,onlytextwidth]
+\column{0.43\textwidth}
 \begin{block}{Passive prediction}
 \[
 p(u^H_{t:t+H}\mid h_t,c)
 \]
-\centering ``What will the human do next?''
+\centering What will the human do next?
 \end{block}
 \column{0.08\textwidth}
 \centering\Large\textcolor{orange}{$\Longrightarrow$}
-\column{0.48\textwidth}
-\begin{alertblock}{Interactive prediction}
+\column{0.49\textwidth}
+\begin{alertblock}{Interactive response model}
 \[
-p_\psi\!\left(u^H_{t:t+H},z^H_{t+1}\mid h_t,c,u^R_{t:t+H}\right)
+p_\psi(u^H_{t:t+H}\mid h_t,c,u^R_{t:t+H})
 \]
-\centering ``How will the human respond if the robot takes this action?''
+\centering How will the human respond if the robot executes this candidate action?
 \end{alertblock}
 \end{columns}
-\vspace{0.32cm}
+\vspace{0.28cm}
 \begin{itemize}
-  \item $h_t$: human, robot, object, and interaction-wrench history
-  \item $c$: task goal, object properties, geometry, contacts, and constraints
-  \item $u^R_{t:t+H}$: candidate robot actions; $z^H$: latent human state
+  \item $u^H$: human wrench/action sequence; $u^R$: candidate robot action sequence.
+  \item A diffusion/sequence model can represent multiple responses and role switches.
+  \item It is predictive, but intention remains implicit unless the model also exposes a goal, trajectory, or preference variable.
 \end{itemize}
-
-\textcolor{pink}{ Each notation like $z^H$ etc. needs to be explained more, considered use some examples}
 \end{frame}
 
-\begin{frame}{A hybrid architecture keeps the human model explicit}
+\begin{frame}{No single representation satisfies every requirement}
+\scriptsize
 \centering
-\resizebox{0.96\textwidth}{!}{%
+\renewcommand{\arraystretch}{1.28}
+\begin{tabularx}{\textwidth}{>{\bfseries}p{2.5cm}XXXX}
+\toprule
+Representation & Control interface & Key strength & Main weakness & Best use \\
+\midrule
+Desired trajectory & Reference $\xi_H^*$ & Direct and visual & Misses preferences and robot influence & Shared-object MPC \\
+Cost / preferences & $J_H,\,w_H,\,\phi$ & Interpretable and game-compatible & Identifiability and feature design & Negotiation and tradeoffs \\
+Dynamical system & $f_H(x;\theta_H)$ & Lightweight online inference & Limited global multimodality & Local coordination \\
+Response distribution & $p(u_H\mid u_R)$ & Flexible and interactive & Intention may remain implicit & Candidate-action evaluation \\
+\bottomrule
+\end{tabularx}
+\vspace{0.32cm}
+\begin{alertblock}{Proposed position}
+Use structured intention variables as the control interface, while a learned response model captures multimodality, bounded rationality, and model mismatch.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{A hierarchy connects intention, prediction, and control}
+\centering
+\resizebox{0.93\textwidth}{!}{%
 \begin{tikzpicture}[
-  node distance=0.48cm and 0.55cm,
-  box/.style={rounded corners=2pt,draw=navy,thick,fill=lightblue,align=center,minimum height=0.72cm,font=\small},
+  node distance=0.55cm,
+  box/.style={rounded corners=2pt,draw=navy,thick,fill=lightblue,align=center,minimum height=0.82cm,font=\small},
   learned/.style={box,draw=orange,fill=warmgray},
   control/.style={box,fill=lightgreen},
   arr/.style={-{Latex[length=2.2mm]},thick,draw=muted}
 ]
-\node[box,text width=3.25cm] (obs) {Multimodal observations\\motion, wrench, vision, context};
-\node[box,text width=2.6cm,right=of obs] (enc) {Task and interaction encoder};
-\node[box,text width=2.9cm,above right=0.38cm and 0.72cm of enc] (game) {Structured human model\\game, IOC, dynamics};
-\node[learned,text width=2.9cm,below right=0.38cm and 0.72cm of enc] (learn) {Learned response model\\Transformer / diffusion};
-\node[box,text width=2.75cm,right=1.0cm of game,yshift=-0.8cm] (dist) {Human response distribution};
-\node[control,text width=2.65cm,right=of dist] (plan) {Risk-aware planning\\and safety filter};
-\draw[arr] (obs)--(enc);
-\draw[arr] (enc)--(game);
-\draw[arr] (enc)--(learn);
-\draw[arr] (game)--(dist);
-\draw[arr] (learn)--(dist);
-\draw[arr] (dist)--(plan);
-\draw[arr,bend left=22] (plan.south) to (obs.south);
-\end{tikzpicture}
-}\textcolor{pink}{the bottom arrow line covered one block encircled in orange line}
-\vspace{0.3cm}
-\begin{block}{Design principle}
-The structured component explains behavior; the learned component captures multimodality and model mismatch; online adaptation personalizes both to the current human.
+\node[box,text width=2.75cm] (obs) {History $h_t$\\motion + wrench};
+\node[box,text width=2.75cm,below=of obs] (ctx) {Context $c$\\goal + geometry};
+\node[learned,text width=3.05cm,right=1.0cm of obs,yshift=-0.7cm] (enc) {Task / interaction encoder\\population prior};
+\node[box,text width=2.9cm,right=0.85cm of enc,yshift=1.35cm] (mode) {Intent mode $z_H$\\path + role};
+\node[box,text width=2.9cm,right=0.85cm of enc] (traj) {Desired object motion\\$\xi_H^*$ or $f_H$};
+\node[box,text width=2.9cm,right=0.85cm of enc,yshift=-1.35cm] (cost) {Preference weights $w_H$\\effort + force + safety};
+\node[learned,text width=3.2cm,right=0.8cm of traj] (resp) {Interactive response distribution\\$p(u_H\mid h,c,u_R,z_H,\xi_H^*,w_H)$};
+\node[control,text width=2.45cm,right=0.65cm of resp] (plan) {Robot planner\\candidate $u_R$};
+\draw[arr] (obs)--(enc); \draw[arr] (ctx)--(enc);
+\draw[arr] (enc)--(mode); \draw[arr] (enc)--(traj); \draw[arr] (enc)--(cost);
+\draw[arr] (mode)--(resp); \draw[arr] (traj)--(resp); \draw[arr] (cost)--(resp);
+\draw[arr] (resp)--(plan); \draw[arr,bend left=32] (plan.north) to (resp.north);
+\end{tikzpicture}}
+\vspace{0.22cm}
+\begin{block}{What ``structured'' means here}
+The encoder may be complex, but its outputs have defined control semantics: intended path/role, desired object motion, and preference weights.
 \end{block}
+\end{frame}
+
+\begin{frame}{Offline priors support online personalization}
+\begin{columns}[T,onlytextwidth]
+\column{0.48\textwidth}
+\begin{block}{Offline: learn shared structure}
+\begin{itemize}
+  \item task/interaction encoders from multi-person data;
+  \item trajectory modes and residual cost features;
+  \item robot-action-conditioned response model;
+  \item calibrated uncertainty on held-out people.
+\end{itemize}
+\end{block}
+\column{0.48\textwidth}
+\begin{block}{Online: update compact variables}
+\begin{itemize}
+  \item belief over intent mode $b_t(z_H)$;
+  \item desired motion parameters $\xi_H^*,\theta_H$;
+  \item preference weights $w_H$;
+  \item optional small person-specific adapter.
+\end{itemize}
+\end{block}
+\end{columns}
+\vspace{0.22cm}
+\begin{alertblock}{Update from physical interaction}
+\[
+b_{t+1}(z_H,\theta_H,w_H)\propto
+p(F_t^{H,\mathrm{obs}},x_{t+1}^O\mid h_t,c,u_t^R,z_H,\theta_H,w_H)\,b_t(z_H,\theta_H,w_H)
+\]
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{First study: Compare intention representations}
+\begin{columns}[T,onlytextwidth]
+\column{0.48\textwidth}
+\begin{block}{Physical test setting}
+Collaborative object transport with:
+\begin{itemize}
+  \item two feasible paths around an obstacle;
+  \item translation--rotation tradeoffs;
+  \item changing leader/follower roles;
+  \item synchronized object state and 6D wrench.
+\end{itemize}
+\end{block}
+\column{0.48\textwidth}
+\begin{block}{Model comparison}
+\begin{enumerate}
+  \item desired-trajectory prediction;
+  \item fixed-feature IOC / cost inference;
+  \item switching dynamical-system inference;
+  \item interactive response model;
+  \item hierarchical hybrid model.
+\end{enumerate}
+\end{block}
+\end{columns}
+\vspace{0.18cm}
+\begin{alertblock}{Central hypothesis}
+Combining structured intention variables with robot-action-conditioned response prediction will improve early intent inference and closed-loop coordination.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Separate model quality from team performance}
+\begin{columns}[T,onlytextwidth]
+\column{0.48\textwidth}
+\begin{block}{Human-model quality}
+\begin{itemize}
+  \item path/role classification and detection delay;
+  \item desired-trajectory displacement error;
+  \item force/action likelihood and calibration;
+  \item adaptation after strategy changes;
+  \item leave-one-person-out generalization.
+\end{itemize}
+\end{block}
+\column{0.48\textwidth}
+\begin{block}{Closed-loop interaction quality}
+\begin{itemize}
+  \item task success and completion time;
+  \item human and robot effort;
+  \item unnecessary interaction force;
+  \item path efficiency and smoothness;
+  \item safety and comfort violations.
+\end{itemize}
+\end{block}
+\end{columns}
+\vspace{0.22cm}
+\begin{exampleblock}{Critical ablations}
+Motion vs. motion+wrench; passive vs. robot-action-conditioned; fixed vs. learned features; population prior vs. online personalization.
+\end{exampleblock}
+\end{frame}
+
+\begin{frame}[shrink=3]{A focused decision can define the first paper}
+\begin{block}{Proposed contribution}
+Compare control-relevant human intention representations for physical collaborative transport, then combine their complementary strengths in a hierarchical model.
+\end{block}
+\vspace{0.18cm}
+\textbf{Questions for discussion}
+\begin{itemize}
+  \item Which output is most useful for the intended controller: desired object motion, cost/preferences, or future human wrench?
+  \item Which intentions can be manipulated or labeled reliably in the planned testbed?
+  \item Should the initial paper emphasize model comparison or one hybrid implementation?
+  \item What robot, object, and force/torque sensing setup is already available?
+\end{itemize}
+\vspace{0.12cm}
+\begin{alertblock}{Recommended starting scope}
+Begin with desired-trajectory and cost/preference baselines, then add robot-action-conditioned response prediction as the learned component.
+\end{alertblock}
+\end{frame}
 
 
+
+\appendix
+\begin{frame}[plain]
+\centering
+\vfill
+{\color{navy}\LARGE\bfseries Follow-up Research Directions}\par
+\vspace{0.35cm}
+{\color{muted}\large Longer-term subprojects in sensing, control, and cross-task generalization}\par
+\vfill
 \end{frame}
 
 \begin{frame}{SP1: Build the physical evidence base}
@@ -309,107 +489,6 @@ The structured component explains behavior; the learned component captures multi
 \end{columns}
 \vspace{0.18cm}
 \paperout{A multimodal benchmark and systematic study of force/torque for human intent inference.}
-
-\textcolor{pink}{this page is too vague. what is the reasonable human intension model Output? cost function features? desired object trajectories? Or "把 intention 表示成一个动态系统或 vector field
-
-不估计 cost，而是假设 human 希望物体服从某个局部动力系统：
-
-x
-˙
-O
-	​
-
-=f
-H
-	​
-
-(x
-O
-	​
-
-;θ
-H
-	​
-
-)
-
-例如一个简单的 attractor model：
-
-p
-˙
-	​
-
-O
-	​
-
-=K
-p
-	​
-
-(p
-H
-∗
-	​
-
-−p
-O
-	​
-
-)
-R
-˙
-O
-	​
-
-=f
-R
-	​
-
-(R
-O
-	​
-
-,R
-H
-∗
-	​
-
-)
-
-这里 human intent 就是：
-
-θ
-H
-	​
-
-=(p
-H
-∗
-	​
-
-,R
-H
-∗
-	​
-
-,K
-p
-	​
-
-,K
-R
-	​
-
-)
-
-分别表示：
-
-期望物体位置；
-期望姿态；
-平移和旋转的积极程度。
-
-这样就不需要假设 human 在解一个完整 optimal control problem。robot 只要根据最近的 object motion、human wrench 和 tracking error 在线估计 DS 参数。" ?
-} 
 \end{frame}
 
 \begin{frame}[shrink=6]{SP2: Make intent and preference explicit}

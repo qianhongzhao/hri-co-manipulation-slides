@@ -323,6 +323,10 @@ Response-conditioned goal, path mode, or trajectory $\xi_H^*$.
 \end{block}
 \end{columns}
 \pinkcomment{move the second arrow in the middle of the page horzontally  delete "Notation is introduced on the following slides."}
+% Assistant response: Agreed. The second arrow should be centered between Core Contribution 2 and
+% the two realization boxes. It appears beside the heading because the arrow is not terminated by an
+% explicit paragraph break; adding \par after \Downarrow will center it on its own line. The notation
+% sentence can be deleted because each symbol is already defined on the following technical slides.
 % User question: A, B, and C look crowded horizontally. Is it better to retain only A and B in the
 % main deck and move C to backup because C is relatively vague and less connected to the shared papers?
 % Assistant response: Yes, that is the stronger meeting version. A is directly connected to the
@@ -456,6 +460,12 @@ N-PACE uses inferred costs and a dynamic game to compute bounded-rational respon
 Use N-PACE for interpretable intent and peer-learning structure; use the learned response model as a population prior or residual for behavior the game model does not explain.
 \end{alertblock}
 \pinkcomment{Q: this page to backup?}
+% Assistant response: I recommend keeping this page in the main deck. It is the conceptual bridge from
+% the shared papers to the proposal: Diffusion Co-Policy motivates a learned multimodal response model,
+% N-PACE motivates an interpretable game-theoretic response, and the hybrid is the proposed direction.
+% Without this page, Option A and the later N-PACE connection appear less motivated. Present it briefly
+% (about 30--45 seconds). If the main deck must be shortened further, merge its central comparison into
+% the preceding response-layer slide and move only the expanded three-column comparison to backup.
 \end{frame}
 
 \begin{frame}{Option A: Infer the human's objective}
@@ -561,6 +571,17 @@ Use a diffusion loss or a loss that keeps the best among several predictions, so
 \vspace{0.2cm}
 \begin{alertblock}{Role in the complete system}
 The desired motion is a low-level reference for shared-object model predictive control (MPC) \pinkcomment{or MPPI? from my understanding for estimated cost maybe sample based could be better? the optimzation of estimated cost could be not desired and even waster computation?}. Combine it with a primitive or preference model when the robot must explain why the human changes strategy.
+% Assistant response: MPPI is a sampling-based MPC algorithm, so the choice is not simply MPC versus
+% MPPI. If Option B outputs a desired object trajectory and the physical dynamics/cost are smooth, a
+% standard trajectory-tracking MPC is the clearest baseline and can enforce object, contact, and safety
+% constraints directly. MPPI becomes attractive when the planner must sample many candidate robot
+% action sequences, roll each one through a multimodal human-response model, and handle nonconvex or
+% nondifferentiable objectives. It avoids cost gradients and some local-minimum issues, but it still
+% depends on the cost being meaningful and may require many rollouts; sampling does not correct a
+% misspecified learned cost. A precise visible wording would be: "The desired motion is a reference for
+% shared-object MPC; sampling-based MPPI is one candidate solver for multimodal interactive rollouts."
+% Cost/model uncertainty should additionally be handled with ensembles or risk-sensitive objectives,
+% physical constraints, and an independent safety filter.
 \end{alertblock}
 \vspace{0.12cm}
 Related: Townsend et al. (2017); Franceschi et al. (2023).

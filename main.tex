@@ -213,7 +213,8 @@ Diffusion Co-Policy maps history to joint actions, leaving intention implicit. A
 % only when they remain safe, then increase assistance as posterior confidence grows. If no offline
 % human data exist, training a large response model purely online is neither data-efficient nor safely
 % identifiable. Start instead from a structured dynamics/game prior and a safe default controller,
-% collect data, and learn the richer population model across later interactions.
+% collect data, and learn the richer population model across later interactions. 
+\greencomment{considered include this content to the visable slides incase they ask me this question.}
 \end{frame}
 
 \begin{frame}{Human intention is hidden but control-relevant}
@@ -333,6 +334,7 @@ Response-conditioned vector field $f_H(x^O,\tilde u_R;\theta_H)$.
 % risks diluting the main argument. I would keep C as a small box on this overview only if you want to
 % signal breadth, while moving its detailed slides to backup. After you confirm, the main-deck model
 % comparison and first-study slides should also be revised from A--C to A--B plus a hybrid.
+\greencomment{plz do corresponding modification of this page, move C to backup and do all the corresonding revision to make the followed pages align the updated structure.}
 \end{frame}
 
 \begin{frame}{How the intention representations will be evaluated}
@@ -433,6 +435,7 @@ p_\psi(u^H_{t:t+H}\mid h_t,c,\tilde u^R_{t:t+H},z_H)
 % from data. The most promising direction is hybrid: use the game model for interpretable intent and
 % strategic coupling, then use a learned prior or residual to capture delay, multimodality, and behavior
 % not explained by the assumed cost. The next slide presents this distinction explicitly.
+\greencomment{Should this GT consideration be alos include in the visable area in the next page?}
 \end{frame}
 
 \begin{frame}{Response prediction complements Co-Policy and N-PACE}

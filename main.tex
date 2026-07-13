@@ -214,7 +214,7 @@ Diffusion Co-Policy maps history to joint actions, leaving intention implicit. A
 % human data exist, training a large response model purely online is neither data-efficient nor safely
 % identifiable. Start instead from a structured dynamics/game prior and a safe default controller,
 % collect data, and learn the richer population model across later interactions. 
-\greencomment{considered include this content to the visable slides incase they ask me this question.}
+% User decision: Include this answer as a visible backup slide for possible Q&A.
 \end{frame}
 
 \begin{frame}{Human intention is hidden but control-relevant}
@@ -310,20 +310,16 @@ Predict $p_\psi(u_H\mid h_t,c,\tilde u_R,z_H)$: how the human may respond to eac
 \end{block}
 \centering\textcolor{orange}{\Large$\Downarrow$}
 \vspace{0.04cm}
-{\raggedright\textbf{Possible control-facing realizations}\hfill{\footnotesize Notation is introduced on the following slides.}\par}
+{\raggedright\textbf{Two control-facing realizations}\hfill{\footnotesize Notation is introduced on the following slides.}\par}
 \vspace{0.03cm}
 \begin{columns}[T,onlytextwidth]
-\column{0.32\textwidth}
+\column{0.48\textwidth}
 \begin{block}{A. Cost/preferences}
 Response-conditioned cost $J_H(u_R)$ and preference weights $w_H$.
 \end{block}
-\column{0.32\textwidth}
+\column{0.48\textwidth}
 \begin{block}{B. Desired object motion}
 Response-conditioned goal, path mode, or trajectory $\xi_H^*$.
-\end{block}
-\column{0.32\textwidth}
-\begin{block}{C. Local dynamics}
-Response-conditioned vector field $f_H(x^O,\tilde u_R;\theta_H)$.
 \end{block}
 \end{columns}
 % User question: A, B, and C look crowded horizontally. Is it better to retain only A and B in the
@@ -334,7 +330,8 @@ Response-conditioned vector field $f_H(x^O,\tilde u_R;\theta_H)$.
 % risks diluting the main argument. I would keep C as a small box on this overview only if you want to
 % signal breadth, while moving its detailed slides to backup. After you confirm, the main-deck model
 % comparison and first-study slides should also be revised from A--C to A--B plus a hybrid.
-\greencomment{plz do corresponding modification of this page, move C to backup and do all the corresonding revision to make the followed pages align the updated structure.}
+% User decision: Keep only A and B in the main deck, move C to backup, and revise all following
+% main-deck pages to use the updated A--B structure.
 \end{frame}
 
 \begin{frame}{How the intention representations will be evaluated}
@@ -424,7 +421,7 @@ p_\psi(u^H_{t:t+H}\mid h_t,c,\tilde u^R_{t:t+H},z_H)
 \begin{itemize}
   \item $h_t$: recent interaction history; $c$: task context; $z_H$: current primitive.
   \item $\tilde u^R$: candidate robot action sequence; $u^H$: predicted human response.
-  \item The output conditions Options A--C; it is not a separate high-level intention by itself.
+  \item The output conditions Options A and B; it is not a separate high-level intention by itself.
 \end{itemize}
 % User question: Could game theory (GT) also be used in this response layer, and should that be
 % discussed as a potential direction?
@@ -435,7 +432,7 @@ p_\psi(u^H_{t:t+H}\mid h_t,c,\tilde u^R_{t:t+H},z_H)
 % from data. The most promising direction is hybrid: use the game model for interpretable intent and
 % strategic coupling, then use a learned prior or residual to capture delay, multimodality, and behavior
 % not explained by the assumed cost. The next slide presents this distinction explicitly.
-\greencomment{Should this GT consideration be alos include in the visable area in the next page?}
+% User decision: Make the game-theoretic realization explicit in the visible comparison on the next page.
 \end{frame}
 
 \begin{frame}{Response prediction complements Co-Policy and N-PACE}
@@ -445,12 +442,12 @@ p_\psi(u^H_{t:t+H}\mid h_t,c,\tilde u^R_{t:t+H},z_H)
 Generates joint human--robot action sequences directly from demonstrations. It captures different behaviors, but human intention remains implicit.
 \end{block}
 \column{0.315\textwidth}
-\begin{block}{Response model}
+\begin{block}{Learned response model}
 Predicts $p(u^H\mid h,c,\tilde u^R)$ for each candidate robot action. It can model accommodation without assuming a human cost or learning rule.
 \end{block}
 \column{0.315\textwidth}
-\begin{block}{N-PACE}
-Uses parameterized costs and a dynamic game to estimate peer intent and explicitly model how the peer learns about the robot.
+\begin{block}{Game-theoretic response}
+N-PACE uses inferred costs and a dynamic game to compute bounded-rational responses and model how the human learns about the robot.
 \end{block}
 \end{columns}
 \vspace{0.22cm}
@@ -567,67 +564,6 @@ The desired motion is a low-level reference for shared-object model predictive c
 Related: Townsend et al. (2017); Franceschi et al. (2023).
 \end{frame}
 
-\begin{frame}{Option C: What is an attractor model?}
-\begin{columns}[T,onlytextwidth]
-\column{0.48\textwidth}
-\begin{block}{Intuitive meaning}
-An attractor model assumes the human is pulling the shared object toward an internal target. The predicted desired velocity points toward that target and decreases as the object approaches it.
-\end{block}
-\begin{block}{Position example}
-\[
-\dot p_O^{H,*}=K_p\bigl(p_H^*(\tilde u_R)-p_O\bigr)
-\]
-$p_O$: current object position; $p_H^*(\tilde u_R)$: inferred human target under candidate robot action $\tilde u_R$; $K_p>0$: response gain; $\dot p_O^{H,*}$: human-desired object velocity.
-\end{block}
-\column{0.48\textwidth}
-\begin{exampleblock}{Why it is attractive}
-The robot estimates a target and a few gains instead of assuming that the human solves a complete optimal-control problem.
-\end{exampleblock}
-\begin{alertblock}{What the model can and cannot express}
-It is well suited to local motion toward a goal, but one attractor cannot represent several competing routes or long-term effort/safety tradeoffs.
-\end{alertblock}
-\end{columns}
-\end{frame}
-
-\begin{frame}{Option C: Full rigid-object pose model}
-\begin{block}{Response-conditioned translation and rotation}
-\[
-\begin{bmatrix}\dot p_O^{H,*}\\[2pt]\omega_O^{H,*}\end{bmatrix}
-=f_H(p_O,R_O,c,\tilde u_R;\theta_H)
-\]
-$p_O$ and $R_O$ are the current object position and orientation; $\dot p_O^{H,*}$ and $\omega_O^{H,*}$ are the human-desired linear and angular velocities.
-\end{block}
-\begin{columns}[T,onlytextwidth]
-\column{0.48\textwidth}
-\begin{block}{Translation component}
-$\dot p_O^{H,*}=K_p\bigl(p_H^*(\tilde u_R)-p_O\bigr)$, where $p_H^*$ is the inferred target position and $K_p$ is the translation response gain.
-\end{block}
-\column{0.48\textwidth}
-\begin{block}{Rotation component}
-$\omega_O^{H,*}=K_{\mathrm{rot}}e_R(R_O,R_H^*)$, where $R_H^*$ is the inferred target orientation and $e_R$ converts orientation error to a 3D rotation vector.
-\end{block}
-\end{columns}
-\end{frame}
-
-\begin{frame}{Option C: Training and online inference}
-\begin{columns}[T,onlytextwidth]
-\column{0.48\textwidth}
-\begin{block}{Training without parameter labels}
-Fit the likelihood of observed object motion under diverse robot actions using constrained system identification. The desired pose and response gains are latent variables rather than manually labeled quantities.
-\end{block}
-\column{0.48\textwidth}
-\begin{block}{Switching between local models}
-Use Expectation--Maximization (EM) offline or a particle filter online to infer $\theta_H$ and the active mode from motion and wrench measurements.
-\end{block}
-\end{columns}
-\vspace{0.2cm}
-\begin{alertblock}{Physical constraints}
-Constrain $f_H$ so the predicted motion remains stable, feasible for the shared object, and consistent with contact and actuation limits.
-\end{alertblock}
-\vspace{0.12cm}
-Related: constraint-aware dynamical-system intent estimation with particle filtering (Shao et al., 2024).
-\end{frame}
-
 \begin{frame}[shrink=4]{Each representation serves a different modeling layer}
 \scriptsize
 \centering
@@ -640,12 +576,11 @@ Interaction primitive & Latent mode $z_H$ & Cross-task structure & Needs mode di
 Response layer & $p(u_H\mid \tilde u_R,z_H)$ & Models accommodation & Needs diverse robot actions & Candidate-action evaluation \\
 Cost / preferences & $J_H,\,w_H,\,\phi$ & Interpretable and game-compatible & Identifiability and feature design & Negotiation and tradeoffs \\
 Desired trajectory & Reference $\xi_H^*$ & Direct and visual & Needs robot-action coverage & Shared-object MPC \\
-Dynamical system & $f_H(x;\theta_H)$ & Lightweight online inference & Limited global multimodality & Local coordination \\
 \bottomrule
 \end{tabularx}
 \vspace{0.32cm}
 \begin{alertblock}{Proposed position}
-Use the learned response layer to condition each structured intention interface on candidate robot actions; retain cost, trajectory, or local dynamics as the interpretable input to control.
+Use the learned response layer to condition both intention interfaces on candidate robot actions; retain either cost/preferences or desired trajectory as the interpretable input to control.
 \end{alertblock}
 \end{frame}
 
@@ -662,7 +597,7 @@ Use the learned response layer to condition each structured intention interface 
 \node[box,text width=3.0cm] (obs) {Observations\\motion + interaction wrench + context};
 \node[learned,text width=2.75cm,right=of obs] (mode) {Interaction primitive\\$z_H=(m,g,v,\rho)$};
 \node[learned,text width=3.4cm,right=of mode] (resp) {Human response model\\$p(u_H\mid h,c,\tilde u_R,z_H)$};
-\node[box,text width=3.4cm,right=of resp] (intent) {A--C control interface\\$w_H^\top\phi_\psi$ / $\xi_H^*$ / $f_H(\theta_H)$};
+\node[box,text width=3.4cm,right=of resp] (intent) {A--B control interface\\$w_H^\top\phi_\psi$ / $\xi_H^*$};
 \node[control,text width=2.9cm,right=of intent] (plan) {N-PACE / MPC\\robot action $u_R$};
 \draw[arr] (obs)--(mode); \draw[arr] (mode)--(resp); \draw[arr] (resp)--(intent); \draw[arr] (intent)--(plan);
 \end{tikzpicture}}
@@ -694,7 +629,7 @@ Current primitive, desired motion, preference weights, and person-specific respo
 \begin{block}{Online: update compact variables}
 \begin{itemize}
   \item belief over intent mode $b_t(z_H)$;
-  \item desired motion parameters $\xi_H^*,\theta_H$;
+  \item desired motion parameters $\xi_H^*$;
   \item preference weights $w_H$;
   \item optional small person-specific adapter.
 \end{itemize}
@@ -745,10 +680,9 @@ Collaborative object transport with:
 \column{0.48\textwidth}
 \begin{block}{Model comparison}
 \begin{enumerate}
-  \item passive structured baselines (A--C);
+  \item passive cost and trajectory baselines (A--B);
   \item response-conditioned cost inference;
   \item response-conditioned desired trajectory;
-  \item response-conditioned local dynamics;
   \item hierarchical hybrid model.
 \end{enumerate}
 \end{block}
@@ -802,7 +736,7 @@ Compare control-relevant human intention representations for physical collaborat
 \end{itemize}
 \vspace{0.12cm}
 \begin{alertblock}{Recommended starting scope}
-Begin with passive versus response-conditioned cost and desired-trajectory models; add local dynamics after validating the shared response layer.
+Compare passive and response-conditioned versions of A and B, then test a hybrid that combines interpretable preferences with a direct desired-motion prediction.
 \end{alertblock}
 \end{frame}
 
@@ -894,6 +828,92 @@ $y_{t+1}=(\mathbf w_t^{\mathrm{int,obs}},x_{t+1}^O)$ combines the observed wrenc
 \begin{alertblock}{Interpretation}
 $\propto$ means: multiply the prior belief by the likelihood of the new observation, then normalize. Models that better predict the human--robot interaction receive more probability.
 \end{alertblock}
+\end{frame}
+
+\begin{frame}{Cold start: Safe behavior before personalization}
+\begin{columns}[T,onlytextwidth]
+\column{0.48\textwidth}
+\begin{block}{New user, no interaction history}
+\begin{itemize}
+  \item Initialize from a population and physical-dynamics prior.
+  \item Adapt only compact variables: primitive, preference weights, and desired-motion parameters.
+  \item Increase robot assistance only as confidence in the human model improves.
+\end{itemize}
+\end{block}
+\column{0.48\textwidth}
+\begin{block}{Initial robot behavior}
+\begin{itemize}
+  \item Use low-gain impedance or compliant control.
+  \item Bound speed and interaction force; retain a safety filter.
+  \item Apply small information-seeking actions only when they remain safe.
+\end{itemize}
+\end{block}
+\end{columns}
+\vspace{0.02cm}
+\begin{alertblock}{If no offline human dataset exists}
+Do not train a large response model purely online. Start from a structured dynamics/game prior and a safe default controller, collect interaction data, and learn the population model across later trials.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Backup Option C: What is an attractor model?}
+\begin{columns}[T,onlytextwidth]
+\column{0.48\textwidth}
+\begin{block}{Intuitive meaning}
+An attractor model assumes the human is pulling the shared object toward an internal target. The predicted desired velocity points toward that target and decreases as the object approaches it.
+\end{block}
+\begin{block}{Position example}
+\[
+\dot p_O^{H,*}=K_p\bigl(p_H^*(\tilde u_R)-p_O\bigr)
+\]
+$p_O$: current object position; $p_H^*(\tilde u_R)$: inferred human target under candidate robot action $\tilde u_R$; $K_p>0$: response gain; $\dot p_O^{H,*}$: human-desired object velocity.
+\end{block}
+\column{0.48\textwidth}
+\begin{exampleblock}{Why it is attractive}
+The robot estimates a target and a few gains instead of assuming that the human solves a complete optimal-control problem.
+\end{exampleblock}
+\begin{alertblock}{What the model can and cannot express}
+It is well suited to local motion toward a goal, but one attractor cannot represent several competing routes or long-term effort/safety tradeoffs.
+\end{alertblock}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Backup Option C: Full rigid-object pose model}
+\begin{block}{Response-conditioned translation and rotation}
+\[
+\begin{bmatrix}\dot p_O^{H,*}\\[2pt]\omega_O^{H,*}\end{bmatrix}
+=f_H(p_O,R_O,c,\tilde u_R;\theta_H)
+\]
+$p_O$ and $R_O$ are the current object position and orientation; $\dot p_O^{H,*}$ and $\omega_O^{H,*}$ are the human-desired linear and angular velocities.
+\end{block}
+\begin{columns}[T,onlytextwidth]
+\column{0.48\textwidth}
+\begin{block}{Translation component}
+$\dot p_O^{H,*}=K_p\bigl(p_H^*(\tilde u_R)-p_O\bigr)$, where $p_H^*$ is the inferred target position and $K_p$ is the translation response gain.
+\end{block}
+\column{0.48\textwidth}
+\begin{block}{Rotation component}
+$\omega_O^{H,*}=K_{\mathrm{rot}}e_R(R_O,R_H^*)$, where $R_H^*$ is the inferred target orientation and $e_R$ converts orientation error to a 3D rotation vector.
+\end{block}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Backup Option C: Training and online inference}
+\begin{columns}[T,onlytextwidth]
+\column{0.48\textwidth}
+\begin{block}{Training without parameter labels}
+Fit the likelihood of observed object motion under diverse robot actions using constrained system identification. The desired pose and response gains are latent variables rather than manually labeled quantities.
+\end{block}
+\column{0.48\textwidth}
+\begin{block}{Switching between local models}
+Use Expectation--Maximization (EM) offline or a particle filter online to infer $\theta_H$ and the active mode from motion and wrench measurements.
+\end{block}
+\end{columns}
+\vspace{0.2cm}
+\begin{alertblock}{Physical constraints}
+Constrain $f_H$ so the predicted motion remains stable, feasible for the shared object, and consistent with contact and actuation limits.
+\end{alertblock}
+\vspace{0.12cm}
+Related: constraint-aware dynamical-system intent estimation with particle filtering (Shao et al., 2024).
 \end{frame}
 
 \begin{frame}{SP1: Build the physical evidence base}

@@ -57,6 +57,7 @@
 \newcommand{\key}[1]{\textcolor{orange}{\textbf{#1}}}
 \newcommand{\pinkcomment}[1]{\textcolor{pink}{\textbf{#1}}}
 % 你上一次把我的 ”\newcommand{\pinkcomment}[1]{\textcolor{pink}{\textbf{#1}}}“ 删掉了再改的时候不要动这一行
+\newcommand{\greencomment}[1]{\textcolor{green}{\textbf{#1}}}
 
 \newcommand{\paperout}[1]{%
   \begin{beamercolorbox}[rounded=true,sep=0.55em,wd=\linewidth]{block body}
@@ -125,6 +126,7 @@ The same table state can lead to different valid routes, rotations, and leader--
 % It is not automatically more accurate: an explicit model may add modeling error and requires
 % diverse robot-action data. The strongest proposal is a hybrid: explicit control-relevant intent
 % variables plus a learned response model for behavior the structured model does not capture.
+\greencomment{plz modify the visable part such that include the necessaity of the explicit human intention model, alos please keep your comment reply here.}
 \end{alertblock}
 \end{frame}
 
@@ -181,6 +183,7 @@ $p(a\mid b)$: distribution of $a$ given $b$; $\psi$: learned model parameters; $
 % Response: Agreed. This notation-summary page can be moved to the backup because it interrupts
 % the main narrative. If it is moved, every formula in the main deck must retain short local
 % definitions immediately below it so each symbol is defined before or at its first use.
+\greencomment{please move }
 \end{frame}
 
 \begin{frame}{A useful model must resolve four uncertainties}
@@ -267,6 +270,7 @@ Human wrench/action responses conditioned on candidate robot actions.
 % p(xi_H^* | h_t,c,tilde u^R), and Option C to f_H(x_O,c,tilde u^R;theta_H).
 % Option D is best viewed as a general response-model layer around these structured intent
 % representations, not as an independent intent variable at the same level.
+\greencomment{If so, please add one more layer here to introduce  human action response prediction between interaction primitive and option A-C. And also modify the next several pages to make their logic can match this updated structure plots}
 \end{frame}
 
 \begin{frame}{How the intention representations will be evaluated}
@@ -491,6 +495,7 @@ Option A models a horizon cost, and Option B predicts a full desired path. Optio
 % rotation, linear/angular velocity, and other object states. Rotation is shown separately because
 % orientation lies on SO(3) and is not handled by ordinary Euclidean subtraction like position.
 % A clearer revision would present an SE(3) pose model with position and orientation components.
+\greencomment{ Please do necessary modifcations to avoid the possible misunderstanding shown in pink comments.}
 \end{frame}
 
 \begin{frame}{Option C: Training and online inference}
@@ -577,6 +582,7 @@ The response model supports counterfactual planning, but needs diverse robot-act
 % p(u^H | history, context, candidate u^R); it can predict accommodation without identifying a
 % cost or specifying a human learning law. They can be combined: N-PACE supplies interpretable
 % intent/learning structure, while Option D supplies a learned prior or residual response model.
+\greencomment{mention your explainations while we introduction the human response prediction in the new slides}
 \end{frame}
 
 \begin{frame}[shrink=4]{Each representation serves a different modeling layer}
@@ -643,6 +649,7 @@ Current primitive, desired motion, preference weights, and person-specific respo
   % training. If it reports an 80 percent prediction region, the true action should fall inside it
   % about 80 percent of the time for unseen people. A clearer visible phrase is:
   % ``uncertainty estimates validated on unseen participants.''
+  \greencomment{change the original words to some words that is easier for me to understand}
 \end{itemize}
 \end{block}
 \column{0.48\textwidth}
@@ -684,6 +691,7 @@ $\propto$ means: multiply the prior belief by the likelihood of the new observat
 % The main deck only needs the message that a population prior is updated online from observed
 % wrench and object motion. The equation remains useful if he asks how personalization is
 % implemented mathematically.
+\greencomment{please do so}
 \end{frame}
 
 \begin{frame}[shrink=5]{Data collection supplies weak and self-supervision}
@@ -726,6 +734,7 @@ Collaborative object transport with:
   % explain a tradeoff. One route may require shorter translation but larger table rotation, while
   % another may be longer but require less rotation. Either explain this on the reference-task
   % slide or replace the bullet with ``coordinated translation and rotation around obstacles.''
+  \greencomment{do something ether introduce before or use other words}
   \item changing leader/follower roles;
   \item synchronized object state and 6D interaction wrench.
 \end{itemize}

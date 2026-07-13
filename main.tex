@@ -55,13 +55,15 @@
 \setbeamerfont{block body}{size=\small}
 
 \newcommand{\key}[1]{\textcolor{orange}{\textbf{#1}}}
+\newcommand{\pinkcomment}[1]{\textcolor{pink}{\textbf{#1}}}
+% 你上一次把我的 ”\newcommand{\pinkcomment}[1]{\textcolor{pink}{\textbf{#1}}}“ 删掉了再改的时候不要动这一行
 
 \newcommand{\paperout}[1]{%
   \begin{beamercolorbox}[rounded=true,sep=0.55em,wd=\linewidth]{block body}
     \footnotesize\textbf{Expected paper:} #1
   \end{beamercolorbox}}
 
-\title{Human Intention Modeling for\\Physical Human--Robot Co-Manipulation}
+\title{Human Intention Modeling for Physical Human--Robot Co-Manipulation}
 \subtitle{Control-relevant representations, inference methods,\\and an initial experimental study}
 \author{Qianhong Zhao}
 \date{Research Discussion with RISE Lab}
@@ -78,9 +80,10 @@
   \end{tikzpicture}
   \vspace{0.72cm}
   \hspace{0.78cm}{\color{navy}\fontsize{17.5}{22}\selectfont\bfseries
-  Human Intention Modeling for\\[-0.03cm]
+  Human Intention Modeling for\\[-0.03cm]\vspace{-0.5cm}
   \hspace{0.78cm}Physical Human--Robot Co-Manipulation\par}
 
+    \pinkcomment{The left blue vertical line looks too long}
   
   \vspace{0.55cm}
   \hspace{0.78cm}{\color{darkgray}\fontsize{13}{17}\selectfont
@@ -93,6 +96,10 @@
   \vspace{0.52cm}
   
 \end{frame}}
+
+\begin{frame}{Frame Title}
+    \pinkcomment{Use one page to revisit the cominipulation task definied the "Diffusion copolicy " paper, which is the test setting he mentioned in the email. what data is available, why human intention is necessary to model}
+\end{frame}
 
 \begin{frame}{Human intention is hidden but control-relevant}
 \begin{columns}[T,onlytextwidth]
@@ -136,7 +143,9 @@ How should human intention be represented and inferred so that it improves real-
 \end{columns}
 \vspace{0.35cm}
 \begin{block}{Terminology}
-``Multimodal sensing'' means multiple input types (motion, wrench, vision). ``Multimodal behavior'' means multiple plausible future human strategies. The two are different.
+``Multimodal sensing'' means multiple input types (motion, wrench, vision). 
+
+``Multimodal behavior'' means multiple plausible future human strategies. 
 \end{block}
 \end{frame}
 
@@ -146,7 +155,7 @@ How should human intention be represented and inferred so that it improves real-
 \column{0.315\textwidth}
 \begin{block}{Diffusion Co-Policy}
 \begin{itemize}
-  \item Generates multiple plausible joint force/action sequences
+  \item Generates multiple plausible (\pinkcomment{this kind of words (like plausible) I cannot understood, try to avoid it}) joint force/action sequences
   \item Demonstrates adaptation and role switching
   \item Provides the physical test setting for collaborative transport
 \end{itemize}
@@ -195,9 +204,10 @@ Output: a human-intended vector field $f_H(x^O;\theta_H)$ over object motion.
 Output: possible interaction-wrench/action responses conditioned on candidate robot actions.
 \end{block}
 \end{columns}
+\pinkcomment{If the intentions are considered as hiriachy, form this page as hiraichy(multilayers) for example primitive -> 4 options. Do not form them as the paralelly in the same layer}
 \vspace{0.12cm}
 \begin{alertblock}{Selection criteria}
-Identifiability, predictive accuracy, real-time control utility, and transfer across tasks.
+Identifiability, predictive accuracy, real-time control utility, and transfer across tasks. \pinkcomment{too vague and short, consider use one page to explain the metrics in more details}
 \end{alertblock}
 
 
@@ -223,7 +233,9 @@ where $\mathcal M_{\mathrm{int}}$ includes translate, rotate, hold, align, inser
 Different tasks reuse a small vocabulary: transport may be \emph{translate--rotate--align}; insertion may be \emph{approach--align--hold--insert}.
 \end{exampleblock}
 \begin{alertblock}{How it can be trained}
-Use weak task-phase labels when available and semi-supervised EM / state-space learning otherwise. Train continuous parameters from future motion and wrench prediction.
+Use weak task-phase labels when available and semi-supervised EM / state-space learning otherwise. Train continuous parameters from future motion and wrench prediction. \pinkcomment{1. "EM" $\rightarrow$ this kind of abbv. need to be definied before you use them. 
+2. for differet primitive, how to identifiy? how many primitive should prepare.
+}
 \end{alertblock}
 \end{columns}
 \vspace{0.15cm}
@@ -259,6 +271,7 @@ Use future object motion as a self-supervised target, but learn a distribution r
 \end{columns}
 \vspace{0.05cm}
 {\scriptsize Best viewed as a \textbf{low-level control output}, not a complete human model (Townsend et al., 2017; Franceschi et al., 2023).}
+\pinkcomment{The scale of this page is different from other pages, you can split this page into two pages to ensure the scale of the pages are identical}
 \end{frame}
 
 \begin{frame}{Option B: Infer what the human is optimizing}
@@ -343,6 +356,7 @@ Fit object-motion likelihood by constrained system identification. Infer $\theta
 \end{columns}
 \vspace{0.08cm}
 {\scriptsize Related: constraint-aware DS intent estimation with particle filtering (Shao et al., 2024).}
+\pinkcomment{{The scale of this page is different from other pages, you can split this page into two pages to ensure the scale of the pages are identical}}
 \end{frame}
 
 \begin{frame}{Option D predicts responses to candidate robot actions}

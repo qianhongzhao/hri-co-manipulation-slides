@@ -757,23 +757,25 @@ Motion vs. motion+wrench; passive vs. robot-action-conditioned; fixed vs. learne
 \end{exampleblock}
 \end{frame}
 
-\begin{frame}[shrink=3]{A focused decision can define the first paper}
-\begin{block}{Proposed contribution}
-Compare control-relevant human intention representations for physical collaborative transport, then combine their complementary strengths in a hierarchical model.
+\begin{frame}{Proposed framework for physical co-manipulation}
+\begin{block}{1. Physical interaction evidence}
+Object and human motion, 6D interaction wrench, task context, and candidate robot actions.
 \end{block}
-\vspace{0.18cm}
-\textbf{Questions for discussion}
-\begin{itemize}
-  \item Which output is most useful for the intended controller: desired object motion, cost/preferences, or future interaction wrench?
-  \item Which intentions can be manipulated or labeled reliably in the planned testbed?
-  \item Should the initial paper emphasize model comparison or one hybrid implementation?
-  \item What robot, object, and force/torque sensing setup is already available?
-\end{itemize}
-\vspace{0.12cm}
-\begin{alertblock}{Recommended starting scope}
-Compare passive and response-conditioned versions of A and B, then test a hybrid that combines interpretable preferences with a direct desired-motion prediction.
-\end{alertblock}
-\pinkcomment{this page could lead some questions I cannot handle. Simplify this, this slides only show the framework}
+\centering\textcolor{orange}{\Large$\Downarrow$}\par
+\begin{block}{2. Human intention and response model}
+Infer a reusable human representation, then predict how the human may respond to each candidate robot action. Expose either interpretable cost/preferences (Option A) or desired object motion (Option B) to the controller.
+\end{block}
+\centering\textcolor{orange}{\Large$\Downarrow$}\par
+\begin{block}{3. Robot planning and safe execution}
+Use N-PACE or shared-object MPC to select robot actions under physical constraints, then apply an independent safety filter. Initial validation uses collaborative object transport.
+\end{block}
+% Original pink concern: \pinkcomment{this page could lead some questions I cannot handle. Simplify
+% this, this slides only show the framework}
+% Assistant response: Agreed. The open questions about sensing platforms, label design, controller
+% outputs, and paper scope could redirect the meeting toward details that are not needed to establish
+% the core idea. The final content slide should instead recap the proposed information flow and state
+% one conservative starting experiment, without asking the audience to choose implementation details.
+% User decision: Replace the discussion-question slide with a framework-only summary.
 \end{frame}
 
 {\setbeamertemplate{footline}{}

@@ -191,6 +191,28 @@ The learned world model is the predictive component; the digital twin is the com
 \end{alertblock}
 \end{frame}
 
+\begin{frame}{A digital twin connects five layers in one synchronized loop}
+\begin{columns}[T,onlytextwidth]
+\column{0.48\textwidth}
+\begin{block}{1. Physical layer}
+Human, robot, shared object, fixtures, and factory environment.
+\end{block}
+\begin{block}{2. Synchronized state layer}
+Robot state/command, object pose/twist, contact state, human pose, task context, and 6D wrench (force + torque).
+\end{block}
+\column{0.48\textwidth}
+\begin{block}{3. Hybrid twin core}
+Physics/contact dynamics, online identification, human intent/response model, and uncertainty estimator.
+\end{block}
+\begin{block}{4--5. Prediction, decision, and safety}
+Roll out candidate actions for human response, object motion, force, and risk; plan with MPC or N-PACE; enforce safety with passivity and CBFs.
+\end{block}
+\end{columns}
+\begin{alertblock}{Closed physical--digital loop}
+Sensors $\rightarrow$ state estimation $\rightarrow$ hybrid twin $\rightarrow$ candidate-action rollouts $\rightarrow$ control/safety filter $\rightarrow$ physical robot $\rightarrow$ new sensor data.
+\end{alertblock}
+\end{frame}
+
 \begin{frame}{Human and robot capabilities complement each other}
 \begin{columns}[T,onlytextwidth]
 \column{0.47\textwidth}
@@ -252,53 +274,66 @@ Given history, context, and a candidate robot action, predict the primitive tran
 \end{columns}
 \end{frame}
 
-\begin{frame}{The twin needs synchronized data at two time scales}
+\begin{frame}{A synchronized episode needs three data groups}
 \begin{columns}[T,onlytextwidth]
-\column{0.48\textwidth}
-\begin{block}{Fast interaction loop}
+\column{0.315\textwidth}
+\begin{block}{Static context}
 \begin{itemize}
-  \item robot joint state and commanded action;
-  \item 6D interaction wrench: force and torque;
-  \item object 6D pose, velocity, and acceleration.
+  \item CAD and geometry;
+  \item mass, inertia, material;
+  \item grasp/contact locations;
+  \item goal, tolerance, human role.
 \end{itemize}
 \end{block}
-\column{0.48\textwidth}
-\begin{block}{Task and human context}
+\column{0.315\textwidth}
+\begin{block}{Time series}
 \begin{itemize}
-  \item task goal, geometry, and contact configuration;
-  \item object properties and grasp locations;
-  \item optional vision and human arm/body motion.
+  \item robot state, command, torque;
+  \item 6D interaction wrench;
+  \item object pose and twist;
+  \item human pose and contact mode.
+\end{itemize}
+\end{block}
+\column{0.315\textwidth}
+\begin{block}{Outcomes and labels}
+\begin{itemize}
+  \item success and completion time;
+  \item human effort and force disagreement;
+  \item safety events;
+  \item strategy or role changes.
 \end{itemize}
 \end{block}
 \end{columns}
-\vspace{0.28cm}
-\begin{alertblock}{Synchronization is part of the model}
-Every observation needs a shared time base, calibrated coordinate frame, and uncertainty estimate. Otherwise apparent human-response delay may actually be sensor latency or frame mismatch.
+\vspace{0.25cm}
+\begin{alertblock}{Synchronization is part of the dataset}
+Store timestamps, calibrated coordinate frames, sensor uncertainty, and trial metadata; otherwise apparent human-response delay may be sensing or alignment error.
 \end{alertblock}
 \end{frame}
 
 \begin{frame}{Sensor specifications should follow the task and control bandwidth}
 \begin{columns}[T,onlytextwidth]
 \column{0.48\textwidth}
-\begin{block}{Measurement envelope}
-\begin{itemize}
-  \item range avoids saturation during expected contact;
-  \item resolution captures the smallest decision-relevant force change;
-  \item bandwidth and latency support the intended feedback loop.
-\end{itemize}
+\begin{block}{Requirements derived from the task}
+\[
+\begin{aligned}
+\text{pose error} &\ll \text{minimum task clearance},\\
+\text{force noise} &\ll \text{meaningful intent-force change},\\
+\text{latency} &\ll \text{fastest interaction time scale}.
+\end{aligned}
+\]
+Transport may tolerate centimeter-level geometry; insertion may require millimeter-level accuracy.
 \end{block}
 \column{0.48\textwidth}
-\begin{block}{System integrity}
+\begin{block}{Minimum physical system}
 \begin{itemize}
-  \item calibrate sensor frames and time alignment;
-  \item quantify noise, drift, and dropout;
-  \item propagate measurement uncertainty into estimation and safety margins.
+  \item robot proprioception, joint torque, and a backdrivable or stable impedance/admittance interface;
+  \item 6D force/torque sensing, object pose tracking, and human hand/arm tracking;
+  \item calibrated contact geometry, safety scanner, and E-stop.
 \end{itemize}
 \end{block}
 \end{columns}
-\vspace{0.3cm}
 \begin{alertblock}{Initial hardware principle}
-Use robot state and force/torque sensing for the fast loop; use vision for slower scene context and human motion. Choose final rates and resolution from the task envelope and closed-loop bandwidth.
+Time synchronization, latency, and calibration may matter more than resolution alone. Select numerical specifications only after defining the task envelope and closed-loop bandwidth.
 \end{alertblock}
 \end{frame}
 

@@ -480,21 +480,21 @@ WP1 supplies synchronized physical data to WP2 and WP3. Validate the structured 
 % \end{alertblock}
 % \end{frame}
 
-\begin{frame}{Project ownership can connect control, HRI, and learning}
+\begin{frame}{ASU collaboration connects the testbed, HRI, and control}
 \begin{columns}[T,onlytextwidth]
 \column{0.48\textwidth}
-\begin{block}{My control and systems focus}
-Digital-twin architecture, synchronization and identification, adaptive/safe control, hardware integration, and closed-loop validation.
+\begin{block}{My role: twin, learning, and control}
+Define the digital-twin architecture and sensing/model interfaces; develop system identification, response/world models, and adaptive/safe control; lead closed-loop integration.
 \end{block}
-\begin{block}{Learning collaboration}
-Multimodal state estimation, human-response/world models, uncertainty estimation, and VLM/VLA interfaces.
+\begin{block}{Joint model development}
+Translate HRI hypotheses into primitives and response variables; jointly train and compare models using the synchronized experimental data.
 \end{block}
 \column{0.48\textwidth}
-\begin{block}{HRI PhD collaboration}
-Primitive and role definitions, study protocol, human-centered measures, participant evaluation, and behavior interpretation.
+\begin{block}{ASU HRI students: testbed and studies}
+Lead testbed operation, sensor calibration, data collection, study protocols, participant experiments, human-centered metrics, and behavior interpretation.
 \end{block}
-\begin{block}{Shared experimental work}
-Sensor setup, synchronized data collection, benchmark design, model comparison, and physical closed-loop experiments.
+\begin{block}{How we work together}
+Students maintain the physical experiment and data pipeline; I connect the learned twin and controller to that interface; we jointly design benchmarks and run closed-loop evaluations.
 \end{block}
 \end{columns}
 % Original pink comment: Based on the foreseeable tasks, explain potential collaborations with the
@@ -502,8 +502,14 @@ Sensor setup, synchronized data collection, benchmark design, model comparison, 
 % Assistant response: The collaboration slide now maps concrete project ownership to control/system
 % integration, HRI primitive and human-study design, learning models/VLM interfaces, and shared data
 % collection and closed-loop evaluation.
-\pinkcomment{ask HRI students to work on  the hard ware side. what do you mean leaning collaboration and share experimental work. me and his students work on together?
-}
+% New pink comment retained: ask HRI students to work on the hardware side. What do you mean by
+% learning collaboration and shared experimental work? Do his students and I work together?
+% Assistant response: Yes. The proposed split is now explicit rather than hiding work under broad
+% labels. ASU HRI students lead testbed operation, sensing/calibration, data collection, study design,
+% and human-centered evaluation. I define the data/model interface and lead the digital twin,
+% learning/control methods, and closed-loop integration. Primitive definitions, model comparison,
+% benchmark design, and physical validation are joint tasks. This keeps me involved in the physical
+% system without implying that I alone must build and maintain the entire HRI testbed.
 \end{frame}
 
 \begin{frame}{Four decisions can define the first joint milestone}
@@ -512,13 +518,13 @@ Sensor setup, synchronized data collection, benchmark design, model comparison, 
   \vspace{0.16cm}
   \item \textbf{Starting assets:} Inventory reusable robots, sensors, simulation models, datasets, and controllers at ASU and Michigan.
   \vspace{0.16cm}
-  \item \textbf{Team interface:} Assign an owner and a shared data/model interface for sensing, HRI experiments, learning, and control.
+  \item \textbf{ASU ownership:} ASU leads the testbed, human studies, data collection, system integration, and primary experimental validation.
   \vspace{0.16cm}
   \item \textbf{First paper milestone:} Choose a measurable initial contribution---testbed/data, primitive human model, or world-model-based control---and its target venue.
 \end{enumerate}
-\vspace{0.28cm}
-\begin{alertblock}{Proposed collaboration rhythm}
-Biweekly ASU student integration; monthly ASU--Michigan technical call; shared repository, data schema, and written action items to keep the two sites aligned.
+\vspace{0.12cm}
+\begin{alertblock}{Supporting role for Michigan}
+Michigan can support method development, simulation and system-identification studies, theoretical analysis, and independent evaluation on the shared data. A monthly technical call and common repository keep this support aligned with ASU's experimental milestones.
 \end{alertblock}
 % Original pink comment: Consider the collaboration rhythm with the Michigan collaborator and explain
 % the four bullets more concretely.
@@ -526,7 +532,14 @@ Biweekly ASU student integration; monthly ASU--Michigan technical call; shared r
 % cross-site asset inventory, assigned ownership plus shared interfaces, and a measurable first-paper
 % milestone. The proposed cadence separates biweekly ASU integration from a monthly ASU--Michigan
 % technical call and adds shared repository/data-schema/action-item mechanisms.
-\pinkcomment{mention ASU is the major contributor then what role should Umich be and what task they should do ?rough idea is ok . }
+% New pink comment retained: Mention that ASU is the major contributor. What role should Michigan
+% have, and what tasks should it do? A rough idea is sufficient.
+% Assistant response: ASU is now explicitly the primary experimental and system-integration site,
+% responsible for the testbed, human studies, synchronized data, and closed-loop validation.
+% Michigan is presented as a supporting collaborator for methods that can be developed without
+% duplicating ASU's hardware effort: simulation, system identification, theoretical analysis, and
+% independent evaluation on shared data. These are proposed roles to discuss, not claims about
+% resources or commitments that have not yet been confirmed.
 \end{frame}
 
 \appendix

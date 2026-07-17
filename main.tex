@@ -234,7 +234,7 @@ For each candidate robot action, predict the human response, object motion, inte
 \end{block}
 \end{columns}
 \begin{alertblock}{5. Decision and safety}
-Plan with MPC or N-PACE; verify force, motion, contact, and actuator limits before execution; use new measurements to update the twin.
+Plan with MPC or N-PACE; verify force, motion, contact, and actuator limits before execution; use new measurements to update the twin.\pinkcomment{should this be plan with above 4 laies? since mpc or npace are too limited}
 \end{alertblock}
 % Original pink comment: use simpler words in the physical layer and ask whether sensor input kinds
 % should be mentioned there.
@@ -302,12 +302,13 @@ Each primitive has a local goal, speed/force level, and human--robot role.
 \column{0.48\textwidth}
 \begin{block}{Initial vocabulary and model size}
 Start with translate, rotate, hold, align, insert, and yield. Merge modes with similar motion/force responses; add a mode only when it improves prediction and control on held-out trials.
-\end{block}
+ \pinkcomment{what do you mean ? especialy for "hold out"}\end{block}
 \column{0.48\textwidth}
 \begin{block}{Control-facing input and output}
 Input: interaction history, task context, and a candidate robot action. Output: current/next primitive, future object motion, interaction wrench, and uncertainty.
 \end{block}
 \end{columns}
+\pinkcomment{explain more about the flow chart. VLM used to understand the task then find the right primitive?}
 \end{frame}
 
 \begin{frame}{A synchronized episode needs three data groups}
@@ -342,7 +343,7 @@ Input: interaction history, task context, and a candidate robot action. Output: 
 \end{columns}
 \vspace{0.25cm}
 \begin{alertblock}{Initial synchronization and fusion pipeline}
-Hardware timestamp/clock sync $\rightarrow$ resample on a common timeline $\rightarrow$ transform to calibrated frames $\rightarrow$ fuse asynchronous measurements with an uncertainty-aware state estimator (e.g., EKF or factor graph).
+Hardware timestamp/clock sync $\rightarrow$ resample on a common timeline $\rightarrow$ transform to calibrated frames $\rightarrow$ fuse asynchronous measurements with an uncertainty-aware state estimator.
 \end{alertblock}
 \end{frame}
 
@@ -371,6 +372,8 @@ Transport may tolerate centimeter-level geometry; insertion may require millimet
 \begin{alertblock}{Initial hardware principle}
 Instrument each independent interaction interface and safety-critical state; do not choose a fixed sensor count. Derive rate and resolution from the task and control bandwidth, while prioritizing synchronization, latency, and calibration.
 \end{alertblock}
+
+\pinkcomment{Do not need too detailed here just mention the necessary requirements of the sensors here list some examples also mention depend what kind of task the factory want to finish. I am not an expert of hardware do not pretend my as one. }
 \end{frame}
 
 \begin{frame}{The hybrid twin core combines four complementary models}
@@ -391,7 +394,7 @@ Capture behavior not explained by the structured models and report confidence fo
 \end{block}
 \end{columns}
 \begin{alertblock}{Interfaces outside the core}
-VLM/VLA interprets the task and proposes primitive sequences; MPC, MPPI, or N-PACE evaluates twin rollouts; an independent safety layer enforces physical constraints before execution.
+VLM/VLA interprets the task and proposes primitive sequences; MPC, MPPI, or N-PACE evaluates twin rollouts; an independent safety layer enforces physical constraints before execution. \pinkcomment{also avoid the MPC etc. use some general methdos}
 \end{alertblock}
 \end{frame}
 
@@ -424,7 +427,7 @@ VLM/VLA interprets the task and proposes primitive sequences; MPC, MPPI, or N-PA
 \end{columns}
 \vspace{0.22cm}
 \begin{alertblock}{Risk-managed scope}
-WP1 and WP2 are the primary one-year outcomes; WP3 is staged from a structured planner toward VLA integration as data and hardware maturity permit.
+WP1 and WP2 are the primary one-year outcomes; WP3 is staged from a structured planner toward VLA integration as data and hardware maturity permit.\pinkcomment{consider use the rich data inside of the digital in the digital twin to construct world model than do PNC. also for the first two, consider the target conference or journals}
 \end{alertblock}
 \end{frame}
 
@@ -464,7 +467,7 @@ Sensor setup, synchronized data collection, benchmark design, model comparison, 
 \end{enumerate}
 \vspace{0.28cm}
 \begin{alertblock}{Proposed working cadence}
-Biweekly technical integration with collaborating students and a monthly milestone review across hardware, modeling, and control.
+Biweekly technical integration with collaborating students and a monthly milestone review across hardware, modeling, and control. \pinkcomment{consider the rhythm of collbration with the person in Umich he mentioned. explain more of above 4 bullets I do not undertansd}
 \end{alertblock}
 \end{frame}
 

@@ -138,6 +138,265 @@
 
 \begin{document}
 
+% =============================================================================
+% Main deck for the follow-up discussion: one-year digital-twin research plan
+% =============================================================================
+
+{\setbeamertemplate{footline}{}
+\begin{frame}[plain]
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[warmgray] (current page.south west) rectangle (current page.north east);
+    \fill[orange] (current page.north west) rectangle ([xshift=0.18cm]current page.south west);
+    \fill[navy] ([xshift=0.82cm,yshift=-0.88cm]current page.north west)
+      rectangle ([xshift=0.98cm,yshift=-2.72cm]current page.north west);
+  \end{tikzpicture}
+  \vspace{0.72cm}
+  \hspace{0.78cm}{\color{navy}\fontsize{17.5}{22}\selectfont\bfseries
+  A Primitive-Structured Digital Twin for\\[-0.03cm]\vspace{-0.5cm}
+  \hspace{0.78cm}Industrial Human--Robot Co-Manipulation\par}
+
+  \vspace{0.55cm}
+  \hspace{0.78cm}{\color{darkgray}\fontsize{13}{17}\selectfont
+  Initial one-year research plan: system architecture, sensing,\\
+  \hspace{0.78cm}human modeling, and safety-grounded control\par}
+  \vfill
+  \hspace{0.78cm}{\color{navy}\normalsize\textbf{Qianhong Zhao}\par}
+  \vspace{0.52cm}
+\end{frame}}
+
+\begin{frame}{The project needs a synchronized digital twin, not one predictor}
+\begin{columns}[T,onlytextwidth]
+\column{0.48\textwidth}
+\begin{block}{What the twin must represent}
+\begin{itemize}
+  \item robot, object, contact, and environment dynamics;
+  \item current human interaction state and uncertainty;
+  \item human and object responses to possible robot actions;
+  \item online mismatch between prediction and the physical system.
+\end{itemize}
+\end{block}
+\column{0.48\textwidth}
+\begin{block}{What makes it a digital twin}
+\begin{itemize}
+  \item synchronized multimodal sensing;
+  \item hybrid physics and learned models;
+  \item prediction, planning, and control in a closed loop;
+  \item continual state estimation, calibration, and validation.
+\end{itemize}
+\end{block}
+\end{columns}
+\vspace{0.2cm}
+\begin{alertblock}{Proposed scope}
+The learned world model is the predictive component; the digital twin is the complete physical--digital loop used to estimate, predict, decide, and verify.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Human and robot capabilities complement each other}
+\begin{columns}[T,onlytextwidth]
+\column{0.47\textwidth}
+\begin{block}{Why retain the human}
+\begin{itemize}
+  \item dexterity and semantic judgment;
+  \item rapid handling of task variation and exceptions;
+  \item flexible decisions when geometry, contact, or goals change.
+\end{itemize}
+\end{block}
+\column{0.49\textwidth}
+\begin{block}{Why add the robot}
+\begin{itemize}
+  \item strength, precision, and repeatability;
+  \item reduction of fatigue and ergonomic load;
+  \item accurate motion and force execution under constraints.
+\end{itemize}
+\end{block}
+\end{columns}
+\vspace{0.28cm}
+\begin{alertblock}{Target application boundary}
+Focus on high-mix co-manipulation where full automation is brittle or expensive, while human-only operation is physically demanding, inconsistent, or difficult to scale.
+\end{alertblock}
+\vspace{0.12cm}
+\centering\textbf{The human should be modeled as an adapting partner, not an external disturbance.}
+\end{frame}
+
+\begin{frame}{Reusable primitives provide the digital twin's interaction structure}
+\centering
+\resizebox{0.94\textwidth}{!}{%
+\begin{tikzpicture}[
+  node distance=0.58cm,
+  box/.style={rounded corners=2pt,draw=navy,thick,fill=lightblue,align=center,minimum height=0.9cm,font=\small},
+  learned/.style={box,draw=orange,fill=warmgray},
+  control/.style={box,fill=lightgreen},
+  arr/.style={-{Latex[length=2.2mm]},thick,draw=muted}
+]
+\node[box,text width=2.55cm] (context) {Task context\\geometry + goal};
+\node[learned,text width=2.75cm,right=of context] (high) {VLM/VLA\\primitive sequence};
+\node[learned,text width=3.15cm,right=of high] (state) {Primitive state\\mode + goal + role};
+\node[learned,text width=3.35cm,right=of state] (response) {Action-conditioned response\\human + object + wrench};
+\node[control,text width=2.9cm,right=of response] (control) {Safe planning/control\\robot action};
+\draw[arr] (context)--(high);
+\draw[arr] (high)--(state);
+\draw[arr] (state)--(response);
+\draw[arr] (response)--(control);
+\end{tikzpicture}}
+\vspace{0.34cm}
+\begin{columns}[T,onlytextwidth]
+\column{0.48\textwidth}
+\begin{block}{Reusable vocabulary}
+Translate, rotate, hold, align, insert, and yield describe object-level motion and force patterns rather than task names.
+\end{block}
+\column{0.48\textwidth}
+\begin{block}{Control-facing prediction}
+Given history, context, and a candidate robot action, predict the primitive transition, future object motion, and interaction wrench.
+\end{block}
+\end{columns}
+\end{frame}
+
+\begin{frame}{The twin needs synchronized data at two time scales}
+\begin{columns}[T,onlytextwidth]
+\column{0.48\textwidth}
+\begin{block}{Fast interaction loop}
+\begin{itemize}
+  \item robot joint state and commanded action;
+  \item 6D interaction wrench: force and torque;
+  \item object 6D pose, velocity, and acceleration.
+\end{itemize}
+\end{block}
+\column{0.48\textwidth}
+\begin{block}{Task and human context}
+\begin{itemize}
+  \item task goal, geometry, and contact configuration;
+  \item object properties and grasp locations;
+  \item optional vision and human arm/body motion.
+\end{itemize}
+\end{block}
+\end{columns}
+\vspace{0.28cm}
+\begin{alertblock}{Synchronization is part of the model}
+Every observation needs a shared time base, calibrated coordinate frame, and uncertainty estimate. Otherwise apparent human-response delay may actually be sensor latency or frame mismatch.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Sensor specifications should follow the task and control bandwidth}
+\begin{columns}[T,onlytextwidth]
+\column{0.48\textwidth}
+\begin{block}{Measurement envelope}
+\begin{itemize}
+  \item range avoids saturation during expected contact;
+  \item resolution captures the smallest decision-relevant force change;
+  \item bandwidth and latency support the intended feedback loop.
+\end{itemize}
+\end{block}
+\column{0.48\textwidth}
+\begin{block}{System integrity}
+\begin{itemize}
+  \item calibrate sensor frames and time alignment;
+  \item quantify noise, drift, and dropout;
+  \item propagate measurement uncertainty into estimation and safety margins.
+\end{itemize}
+\end{block}
+\end{columns}
+\vspace{0.3cm}
+\begin{alertblock}{Initial hardware principle}
+Use robot state and force/torque sensing for the fast loop; use vision for slower scene context and human motion. Choose final rates and resolution from the task envelope and closed-loop bandwidth.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Large models propose; model-based control verifies}
+\begin{columns}[T,onlytextwidth]
+\column{0.31\textwidth}
+\begin{block}{VLM/VLA layer}
+Understand the scene, extract task constraints, and propose primitive sequences or candidate actions.
+\end{block}
+\column{0.31\textwidth}
+\begin{block}{Digital-twin layer}
+Roll out candidate actions through physical dynamics and the primitive-conditioned human response model.
+\end{block}
+\column{0.31\textwidth}
+\begin{block}{Control layer}
+Execute with MPC/MPPI and impedance or admittance control; adapt uncertain physical parameters online.
+\end{block}
+\end{columns}
+\vspace{0.3cm}
+\begin{alertblock}{Where the theoretical guarantee belongs}
+An independent safety layer enforces force, velocity, collision, workspace, and actuator constraints using passivity, robust/adaptive control, control barrier functions, or a safety filter.
+\end{alertblock}
+\vspace{0.12cm}
+\centering\textbf{The guarantee applies to the closed-loop architecture, not to the large model alone.}
+\end{frame}
+
+\begin{frame}{Three work packages define a realistic one-year plan}
+\begin{columns}[T,onlytextwidth]
+\column{0.315\textwidth}
+\begin{block}{WP1: Physical digital twin}
+\textbf{Focus:} sensing, synchronization, state estimation, and hybrid dynamics.
+
+\textbf{Deliverable:} validated testbed and dataset.
+
+\textbf{Paper:} system or benchmark study.
+\end{block}
+\column{0.315\textwidth}
+\begin{block}{WP2: Human response twin}
+\textbf{Focus:} primitive transitions, action-conditioned responses, and personalization.
+
+\textbf{Deliverable:} prediction across people and task variations.
+
+\textbf{Paper:} primary modeling study.
+\end{block}
+\column{0.315\textwidth}
+\begin{block}{WP3: Safe closed loop}
+\textbf{Focus:} high-level proposals, twin rollouts, adaptive control, and safety.
+
+\textbf{Deliverable:} physical closed-loop demonstration.
+
+\textbf{Paper:} integration/control study.
+\end{block}
+\end{columns}
+\vspace{0.22cm}
+\begin{alertblock}{Risk-managed scope}
+WP1 and WP2 are the primary one-year outcomes; WP3 is staged from a structured planner toward VLA integration as data and hardware maturity permit.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Clear ownership can connect control, HRI, and learning expertise}
+\begin{columns}[T,onlytextwidth]
+\column{0.48\textwidth}
+\begin{block}{Proposed collaboration}
+\begin{itemize}
+  \item \textbf{My focus:} dynamics, identification, adaptive/safe control, and hardware integration.
+  \item \textbf{HRI PhD collaborators:} study design, human factors, and participant evaluation.
+  \item \textbf{Joint work:} primitives, data, response modeling, and closed-loop experiments.
+\end{itemize}
+\end{block}
+\column{0.48\textwidth}
+\begin{block}{Decisions for this discussion}
+\begin{enumerate}
+  \item Which factory task is the first benchmark?
+  \item Which robot, force/torque sensors, cameras, and simulation assets are available?
+  \item Which students, existing models, and paper target should define the first milestone?
+\end{enumerate}
+\end{block}
+\end{columns}
+\vspace{0.25cm}
+\begin{alertblock}{Proposed working cadence}
+Biweekly technical integration with collaborating students and a monthly milestone review across hardware, modeling, and control.
+\end{alertblock}
+\end{frame}
+
+\appendix
+{\setbeamertemplate{footline}{}
+\begin{frame}[plain]
+\centering
+\vfill
+{\color{navy}\LARGE\bfseries Technical Background from the Previous Discussion}\par
+\vspace{0.35cm}
+{\color{muted}\large Human intention representations, response prediction, and initial studies}\par
+\vfill
+\end{frame}}
+
+% =============================================================================
+% Previous deck retained below as technical background and Q&A material
+% =============================================================================
+
 {\setbeamertemplate{footline}{}
 \begin{frame}[plain]
   \begin{tikzpicture}[remember picture,overlay]
@@ -695,7 +954,7 @@ Use accessible human--human demonstrations for pretraining, then collect human--
 
 
 
-\appendix
+% The appendix begins before the retained previous deck.
 \begin{frame}[plain]
 \centering
 \vfill

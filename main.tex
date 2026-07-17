@@ -234,8 +234,13 @@ For each candidate robot action, predict the human response, object motion, inte
 \end{block}
 \end{columns}
 \begin{alertblock}{5. Decision and safety}
-Plan with MPC or N-PACE; verify force, motion, contact, and actuator limits before execution; use new measurements to update the twin.\pinkcomment{should this be plan with above 4 laies? since mpc or npace are too limited}
+Use layers 1--4 to compare candidate actions with a task-appropriate planner/controller. Enforce physical and safety limits; update the twin from new measurements.
 \end{alertblock}
+% Original pink question: Should planning use the information from the four layers above? MPC and
+% N-PACE may be too limited as the only named choices.
+% Assistant response: Yes. Layer 5 now consumes the synchronized state, hybrid model, and
+% counterfactual predictions from layers 1--4. The visible text no longer commits to MPC or N-PACE;
+% it leaves the planner/controller task-dependent while retaining an explicit safety check.
 % Original pink comment: use simpler words in the physical layer and ask whether sensor input kinds
 % should be mentioned there.
 % Assistant response: Simplified the physical-system description. Sensor kinds belong in the
@@ -297,18 +302,28 @@ Each primitive has a local goal, speed/force level, and human--robot role.
 \draw[arr] (state)--(response);
 \draw[arr] (response)--(control);
 \end{tikzpicture}}
-\vspace{0.34cm}
+\vspace{0.16cm}
+\textbf{Flow:} VLM/VLA interprets the task and proposes a primitive sequence; online sensing identifies the active primitive; the response model predicts consequences; the controller selects the robot action.
+\vspace{0.16cm}
 \begin{columns}[T,onlytextwidth]
 \column{0.48\textwidth}
 \begin{block}{Initial vocabulary and model size}
-Start with translate, rotate, hold, align, insert, and yield. Merge modes with similar motion/force responses; add a mode only when it improves prediction and control on held-out trials.
- \pinkcomment{what do you mean ? especialy for "hold out"}\end{block}
+Start with six modes as an initial vocabulary. Evaluate on separate trials from people and task settings not used for training. Merge indistinguishable modes; add one only if it improves prediction and control on these unseen trials.
+\end{block}
 \column{0.48\textwidth}
 \begin{block}{Control-facing input and output}
 Input: interaction history, task context, and a candidate robot action. Output: current/next primitive, future object motion, interaction wrench, and uncertainty.
 \end{block}
 \end{columns}
-\pinkcomment{explain more about the flow chart. VLM used to understand the task then find the right primitive?}
+% Original pink question: What does "held-out" mean?
+% Assistant response: Replaced the term with a direct definition: separate evaluation trials from
+% people and task settings not used for training. These unseen trials test whether merging or adding
+% a primitive improves generalization rather than only fitting the training data.
+% Original pink question: Explain the flow chart. Does VLM understand the task and find the right
+% primitive?
+% Assistant response: Added a visible flow explanation. VLM/VLA interprets task context and proposes
+% a primitive sequence; synchronized online sensing identifies which primitive is currently active;
+% the response model predicts consequences; and the controller selects the robot action.
 \end{frame}
 
 \begin{frame}{A synchronized episode needs three data groups}
@@ -347,33 +362,37 @@ Hardware timestamp/clock sync $\rightarrow$ resample on a common timeline $\righ
 \end{alertblock}
 \end{frame}
 
-\begin{frame}{Sensor specifications should follow the task and control bandwidth}
+\begin{frame}{Sensor requirements depend on the selected factory task}
 \begin{columns}[T,onlytextwidth]
 \column{0.48\textwidth}
-\begin{block}{Requirements derived from the task}
-\[
-\begin{aligned}
-\text{pose error} &\ll \text{minimum task clearance},\\
-\text{force noise} &\ll \text{meaningful intent-force change},\\
-\text{latency} &\ll \text{fastest interaction time scale}.
-\end{aligned}
-\]
-Transport may tolerate centimeter-level geometry; insertion may require millimeter-level accuracy.
+\begin{block}{Necessary measurement categories}
+\begin{itemize}
+  \item robot state and commanded action;
+  \item interaction force and torque;
+  \item shared-object motion;
+  \item human hand/arm motion or contact state;
+  \item workspace and safety events.
+\end{itemize}
 \end{block}
 \column{0.48\textwidth}
-\begin{block}{Minimum physical system}
+\begin{block}{Task-derived requirements}
 \begin{itemize}
-  \item robot proprioception, joint torque, and a backdrivable or stable impedance/admittance interface;
-  \item 6D force/torque sensing, object pose tracking, and human hand/arm tracking;
-  \item calibrated contact geometry, safety scanner, and E-stop.
+  \item enough range to avoid saturation;
+  \item enough resolution to detect meaningful motion/force changes;
+  \item latency below the relevant interaction time scale;
+  \item synchronized timestamps and calibrated frames.
 \end{itemize}
 \end{block}
 \end{columns}
-\begin{alertblock}{Initial hardware principle}
-Instrument each independent interaction interface and safety-critical state; do not choose a fixed sensor count. Derive rate and resolution from the task and control bandwidth, while prioritizing synchronization, latency, and calibration.
+\begin{alertblock}{Initial position}
+Do not prescribe a sensor count or numerical specification before selecting the benchmark. Table transport and precision insertion require different sensing; exact hardware should be chosen with the robotics team from the task requirements.
 \end{alertblock}
-
-\pinkcomment{Do not need too detailed here just mention the necessary requirements of the sensors here list some examples also mention depend what kind of task the factory want to finish. I am not an expert of hardware do not pretend my as one. }
+% Original pink comment: Avoid excessive sensor detail or presenting me as a hardware expert. Mention
+% necessary requirements and examples, while emphasizing dependence on the factory task.
+% Assistant response: Removed the equations and specific backdrivability/impedance hardware claim.
+% The slide now gives measurement categories and task-derived selection principles, explicitly
+% deferring sensor count and numerical specifications until the benchmark and available hardware are
+% discussed with the robotics team.
 \end{frame}
 
 \begin{frame}{The hybrid twin core combines four complementary models}
@@ -394,8 +413,11 @@ Capture behavior not explained by the structured models and report confidence fo
 \end{block}
 \end{columns}
 \begin{alertblock}{Interfaces outside the core}
-VLM/VLA interprets the task and proposes primitive sequences; MPC, MPPI, or N-PACE evaluates twin rollouts; an independent safety layer enforces physical constraints before execution. \pinkcomment{also avoid the MPC etc. use some general methdos}
+VLM/VLA interprets the task and proposes primitive sequences. A task-appropriate planning/control method evaluates twin predictions, while an independent safety layer enforces physical constraints before execution.
 \end{alertblock}
+% Original pink comment: Avoid listing MPC, MPPI, or N-PACE here; use general method categories.
+% Assistant response: Replaced the algorithm list with a task-appropriate planning/control method.
+% The slide now emphasizes interfaces and responsibilities rather than prematurely selecting a solver.
 \end{frame}
 
 \begin{frame}{Three work packages define a realistic one-year plan}
@@ -405,29 +427,56 @@ VLM/VLA interprets the task and proposes primitive sequences; MPC, MPPI, or N-PA
 \textbf{Focus:} sensing, synchronization, state estimation, and hybrid dynamics.
 
 \textbf{Deliverable:} validated testbed and dataset.
-
-\textbf{Paper:} system or benchmark study.
 \end{block}
 \column{0.315\textwidth}
 \begin{block}{WP2: Human response twin}
 \textbf{Focus:} primitive transitions, action-conditioned responses, and personalization.
 
 \textbf{Deliverable:} prediction across people and task variations.
-
-\textbf{Paper:} primary modeling study.
 \end{block}
 \column{0.315\textwidth}
-\begin{block}{WP3: Safe closed loop}
-\textbf{Focus:} high-level proposals, twin rollouts, adaptive control, and safety.
+\begin{block}{WP3: World model and control}
+\textbf{Focus:} use the twin dataset to learn action-conditioned rollouts for prediction, planning, and control.
 
-\textbf{Deliverable:} physical closed-loop demonstration.
-
-\textbf{Paper:} integration/control study.
+\textbf{Deliverable:} validated rollouts and a safe physical demonstration.
 \end{block}
 \end{columns}
 \vspace{0.22cm}
-\begin{alertblock}{Risk-managed scope}
-WP1 and WP2 are the primary one-year outcomes; WP3 is staged from a structured planner toward VLA integration as data and hardware maturity permit.\pinkcomment{consider use the rich data inside of the digital in the digital twin to construct world model than do PNC. also for the first two, consider the target conference or journals}
+\begin{alertblock}{Dependency between work packages}
+WP1 supplies synchronized physical data to WP2 and WP3. Validate the structured twin first, then learn the world model, and connect its rollouts to planning and control only after prediction and uncertainty are tested.
+\end{alertblock}
+% Original pink comment: Use the rich digital-twin data to construct a world model and then support
+% planning and control; also consider target conferences or journals for WP1 and WP2.
+% Assistant response: WP3 is now explicitly a world-model-to-planning/control project fed by WP1's
+% synchronized dataset. The slide states the dependency and validation order. It also lists candidate
+% venue families for all three work packages; these are discussion targets, not commitments, and the
+% final venue should follow the dominant contribution and project timing.
+\end{frame}
+
+\begin{frame}{Candidate publication paths follow the dominant contribution}
+\begin{columns}[T,onlytextwidth]
+\column{0.315\textwidth}
+\begin{block}{WP1: System and dataset}
+\textbf{Contribution:} synchronized digital-twin testbed, validation, and reusable data.
+
+\textbf{Candidates:} IEEE CASE, T-ASE, or RA-L.
+\end{block}
+\column{0.315\textwidth}
+\begin{block}{WP2: Human modeling}
+\textbf{Contribution:} primitive/response representation, generalization, and human study.
+
+\textbf{Candidates:} HRI, RO-MAN, ICRA, or RA-L.
+\end{block}
+\column{0.315\textwidth}
+\begin{block}{WP3: World model and control}
+\textbf{Contribution:} action-conditioned rollouts and safe physical planning/control.
+
+\textbf{Candidates:} ICRA, IROS, or RA-L.
+\end{block}
+\end{columns}
+\vspace{0.3cm}
+\begin{alertblock}{Discussion position}
+These are candidate venue families, not commitments. The final target should follow the strongest validated contribution, paper maturity, and submission timing.
 \end{alertblock}
 \end{frame}
 
@@ -457,18 +506,24 @@ Sensor setup, synchronized data collection, benchmark design, model comparison, 
 
 \begin{frame}{Four decisions can define the first joint milestone}
 \begin{enumerate}
-  \item \textbf{Benchmark task:} Which factory co-manipulation task should be modeled first?
+  \item \textbf{Benchmark task:} Select one factory operation and write its goal, physical setup, task variation, and success criteria.
   \vspace{0.16cm}
-  \item \textbf{Starting assets:} Which robot, sensors, simulation models, datasets, and controllers are already available?
+  \item \textbf{Starting assets:} Inventory reusable robots, sensors, simulation models, datasets, and controllers at ASU and Michigan.
   \vspace{0.16cm}
-  \item \textbf{Team interface:} Which students and existing projects should each work package build on?
+  \item \textbf{Team interface:} Assign an owner and a shared data/model interface for sensing, HRI experiments, learning, and control.
   \vspace{0.16cm}
-  \item \textbf{Paper target:} Should the first milestone emphasize the testbed/dataset, primitive human model, or safe closed-loop control?
+  \item \textbf{First paper milestone:} Choose a measurable initial contribution---testbed/data, primitive human model, or world-model-based control---and its target venue.
 \end{enumerate}
 \vspace{0.28cm}
-\begin{alertblock}{Proposed working cadence}
-Biweekly technical integration with collaborating students and a monthly milestone review across hardware, modeling, and control. \pinkcomment{consider the rhythm of collbration with the person in Umich he mentioned. explain more of above 4 bullets I do not undertansd}
+\begin{alertblock}{Proposed collaboration rhythm}
+Biweekly ASU student integration; monthly ASU--Michigan technical call; shared repository, data schema, and written action items to keep the two sites aligned.
 \end{alertblock}
+% Original pink comment: Consider the collaboration rhythm with the Michigan collaborator and explain
+% the four bullets more concretely.
+% Assistant response: Each decision now has an explicit output: a written task specification, a
+% cross-site asset inventory, assigned ownership plus shared interfaces, and a measurable first-paper
+% milestone. The proposed cadence separates biweekly ASU integration from a monthly ASU--Michigan
+% technical call and adds shared repository/data-schema/action-item mechanisms.
 \end{frame}
 
 \appendix

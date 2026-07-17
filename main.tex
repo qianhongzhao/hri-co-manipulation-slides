@@ -187,7 +187,9 @@
 \end{columns}
 \vspace{0.2cm}
 \begin{alertblock}{Proposed scope}
-The learned world model is the predictive component; the digital twin is the complete physical--digital loop used to estimate, predict, decide, and verify.
+The digital twin is the complete physical--digital loop used to estimate, predict, decide, and verify.
+
+\pinkcomment{Use this page to explain what is Digtial twin also}
 \end{alertblock}
 \end{frame}
 
@@ -195,7 +197,7 @@ The learned world model is the predictive component; the digital twin is the com
 \begin{columns}[T,onlytextwidth]
 \column{0.48\textwidth}
 \begin{block}{1. Physical layer}
-Human, robot, shared object, fixtures, and factory environment.
+Human, robot, shared object, fixtures, and factory environment.\pinkcomment{use some simpler words. SHould you metion sensor input kinds here?}
 \end{block}
 \begin{block}{2. Synchronized state layer}
 Robot state/command, object pose/twist, contact state, human pose, task context, and 6D wrench (force + torque).
@@ -211,6 +213,9 @@ Roll out candidate actions for human response, object motion, force, and risk; p
 \begin{alertblock}{Closed physical--digital loop}
 Sensors $\rightarrow$ state estimation $\rightarrow$ hybrid twin $\rightarrow$ candidate-action rollouts $\rightarrow$ control/safety filter $\rightarrow$ physical robot $\rightarrow$ new sensor data.
 \end{alertblock}
+\pinkcomment{after this page, mention important tasks to be donw foreseen, for example: how many sensors should be considered? what kind? if you synchronize, what method to do, to sensor fusion? How many pritivies should be consider? what combination of primitive should consider? How to combine? use the co policy task as an example. Insider of the twin core,  elaborate what combponents should inclued? etc. you may consider reuse current page 5-8 to address above comments.}
+
+\pinkcomment{Based on above tasks, explain the potenial collbrations with his Phd students.}
 \end{frame}
 
 \begin{frame}{Human and robot capabilities complement each other}
@@ -239,9 +244,12 @@ Focus on high-mix co-manipulation where full automation is brittle or expensive,
 \vspace{0.12cm}
 \centering\textbf{The human should be modeled as an adapting partner, not an external disturbance.}
 
+\pinkcomment{move this page before the page explain what is ditial twin as a motivation. Also use simple word. For example I do not understand semantic}
+
 \end{frame}
 
 \begin{frame}{Reusable primitives provide the digital twin's interaction structure}
+
 \centering
 \resizebox{0.94\textwidth}{!}{%
 \begin{tikzpicture}[

@@ -164,91 +164,119 @@
   \vspace{0.52cm}
 \end{frame}}
 
-\begin{frame}{Synchronized digital twin}
-\begin{columns}[T,onlytextwidth]
-\column{0.48\textwidth}
-\begin{block}{What the twin must represent}
-\begin{itemize}
-  \item robot, object, contact, and environment dynamics;
-  \item current human interaction state and uncertainty;
-  \item human and object responses to possible robot actions;
-  \item online mismatch between prediction and the physical system.
-\end{itemize}
-\end{block}
-\column{0.48\textwidth}
-\begin{block}{What makes it a digital twin}
-\begin{itemize}
-  \item synchronized multimodal sensing;
-  \item hybrid physics and learned models;
-  \item prediction, planning, and control in a closed loop;
-  \item continual state estimation, calibration, and validation.
-\end{itemize}
-\end{block}
-\end{columns}
-\vspace{0.2cm}
-\begin{alertblock}{Proposed scope}
-The digital twin is the complete physical--digital loop used to estimate, predict, decide, and verify.
-
-\pinkcomment{Use this page to explain what is Digtial twin also}
-\end{alertblock}
-\end{frame}
-
-\begin{frame}{A digital twin connects five layers in one synchronized loop}
-\begin{columns}[T,onlytextwidth]
-\column{0.48\textwidth}
-\begin{block}{1. Physical layer}
-Human, robot, shared object, fixtures, and factory environment.\pinkcomment{use some simpler words. SHould you metion sensor input kinds here?}
-\end{block}
-\begin{block}{2. Synchronized state layer}
-Robot state/command, object pose/twist, contact state, human pose, task context, and 6D wrench (force + torque).
-\end{block}
-\column{0.48\textwidth}
-\begin{block}{3. Hybrid twin core}
-Physics/contact dynamics, online identification, human intent/response model, and uncertainty estimator.
-\end{block}
-\begin{block}{4--5. Prediction, decision, and safety}
-Roll out candidate actions for human response, object motion, force, and risk; plan with MPC or N-PACE; enforce safety with passivity and CBFs.
-\end{block}
-\end{columns}
-\begin{alertblock}{Closed physical--digital loop}
-Sensors $\rightarrow$ state estimation $\rightarrow$ hybrid twin $\rightarrow$ candidate-action rollouts $\rightarrow$ control/safety filter $\rightarrow$ physical robot $\rightarrow$ new sensor data.
-\end{alertblock}
-\pinkcomment{after this page, mention important tasks to be donw foreseen, for example: how many sensors should be considered? what kind? if you synchronize, what method to do, to sensor fusion? How many pritivies should be consider? what combination of primitive should consider? How to combine? use the co policy task as an example. Insider of the twin core,  elaborate what combponents should inclued? etc. you may consider reuse current page 5-8 to address above comments.}
-
-\pinkcomment{Based on above tasks, explain the potenial collbrations with his Phd students.}
-\end{frame}
-
 \begin{frame}{Human and robot capabilities complement each other}
 \begin{columns}[T,onlytextwidth]
 \column{0.47\textwidth}
 \begin{block}{Why retain the human}
 \begin{itemize}
-  \item dexterity and semantic judgment;
-  \item rapid handling of task variation and exceptions;
-  \item flexible decisions when geometry, contact, or goals change.
+  \item adapt to new object shapes and changing instructions;
+  \item use dexterous hands and practical judgment;
+  \item respond to unexpected contact or task changes.
 \end{itemize}
 \end{block}
 \column{0.49\textwidth}
 \begin{block}{Why add the robot}
 \begin{itemize}
-  \item strength, precision, and repeatability;
-  \item reduction of fatigue and ergonomic load;
-  \item accurate motion and force execution under constraints.
+  \item provide strength, precision, and repeatability;
+  \item reduce fatigue and physical load;
+  \item execute accurate motion and force under constraints.
 \end{itemize}
 \end{block}
 \end{columns}
 \vspace{0.28cm}
-\begin{alertblock}{Target application boundary}
-Focus on high-mix co-manipulation where full automation is brittle or expensive, while human-only operation is physically demanding, inconsistent, or difficult to scale.
+\begin{alertblock}{Target application}
+Focus on factory tasks that change often: full automation requires too much setup, while human-only work is tiring, risky, or inconsistent.
 \end{alertblock}
 \vspace{0.12cm}
-\centering\textbf{The human should be modeled as an adapting partner, not an external disturbance.}
-
-\pinkcomment{move this page before the page explain what is ditial twin as a motivation. Also use simple word. For example I do not understand semantic}
-
+\centering\textbf{The human is an adapting partner, not an external disturbance.}
+% Original pink comment: move this page before the page explaining what a digital twin is and use
+% simpler words; for example, "semantic" is unclear.
+% Assistant response: Moved this motivation page before both digital-twin pages. Replaced semantic
+% judgment, high-mix, brittle, and ergonomic language with concrete examples: changing instructions,
+% new object shapes, unexpected contact, physical load, and setup cost.
 \end{frame}
 
-\begin{frame}{Reusable primitives provide the digital twin's interaction structure}
+\begin{frame}{A digital twin is a live model of the physical task}
+\begin{columns}[T,onlytextwidth]
+\column{0.48\textwidth}
+\begin{block}{Continuously updated from sensors}
+The model tracks the robot, human, shared object, contact, and task using synchronized motion, force/torque, robot-state, and context measurements.
+\end{block}
+\column{0.48\textwidth}
+\begin{block}{Used before and during robot action}
+The robot tests possible actions in the model, selects a useful action, executes it through a safety layer, and compares the measured outcome with the prediction.
+\end{block}
+\end{columns}
+\vspace{0.28cm}
+\begin{alertblock}{Working definition}
+A digital twin is a synchronized, predictive, and continuously corrected digital model connected to the physical human--robot task in a closed loop.
+\end{alertblock}
+% Original pink comment: Use this page to explain what a digital twin is.
+% Assistant response: Replaced the previous checklist with a direct definition and two operational
+% properties: continuously updated from sensors and used to test actions before physical execution.
+\end{frame}
+
+\begin{frame}{A digital twin connects five layers in one synchronized loop}
+\begin{columns}[T,onlytextwidth]
+\column{0.48\textwidth}
+\begin{block}{1. Physical system}
+The human and robot jointly move a shared object in a real workspace with tools, supports, and obstacles.
+\end{block}
+\begin{block}{2. Synchronized state}
+Combine robot joints/commands, force and torque, object and human motion, contact state, and task goal on one timeline.
+\end{block}
+\column{0.48\textwidth}
+\begin{block}{3. Hybrid twin core}
+Combine object/contact physics, online parameter estimation, a human primitive/response model, and prediction uncertainty.
+\end{block}
+\begin{block}{4. Counterfactual prediction}
+For each candidate robot action, predict the human response, object motion, interaction force, task progress, and risk.
+\end{block}
+\end{columns}
+\begin{alertblock}{5. Decision and safety}
+Plan with MPC or N-PACE; verify force, motion, contact, and actuator limits before execution; use new measurements to update the twin.
+\end{alertblock}
+% Original pink comment: use simpler words in the physical layer and ask whether sensor input kinds
+% should be mentioned there.
+% Assistant response: Simplified the physical-system description. Sensor kinds belong in the
+% synchronized-state layer rather than the physical layer, so they are listed explicitly in layer 2.
+% Original pink comment: after this page, explain foreseeable tasks: sensor number/type,
+% synchronization and fusion, primitive number/composition, a Co-Policy example, twin-core
+% components, and collaboration with PhD students; reuse the following pages if possible.
+% Assistant response: The following main-deck sequence now answers these questions: primitive
+% definition/composition and Co-Policy example; primitive vocabulary and model I/O; episode data and
+% synchronization/fusion; task-derived sensor requirements and minimum hardware; hybrid-core and
+% control architecture; work packages; and task-specific collaboration roles.
+\end{frame}
+
+\begin{frame}{A task uses context to compose reusable interaction primitives}
+\begin{alertblock}{Simple definition}
+A \textbf{primitive} is a reusable, short part of an interaction, such as translate, rotate, hold, align, insert, or yield. The scene provides context; a sequence of primitives describes how the task is executed.
+\end{alertblock}
+\begin{columns}[T,onlytextwidth]
+\column{0.48\textwidth}
+\begin{block}{Task representation}
+\centering\textbf{Task execution is a context-conditioned composition of primitives.}\par
+\vspace{0.14cm}
+\raggedright
+Context includes the object, goal, obstacles, contact locations, and physical constraints.
+\end{block}
+\column{0.48\textwidth}
+\begin{block}{Illustrative table-carrying decomposition}
+\[
+\begin{gathered}
+\text{translate}\rightarrow\text{rotate}\rightarrow\text{align}\\
+\rightarrow\text{translate}\rightarrow\text{hold}
+\end{gathered}
+\]
+Each primitive has a local goal, speed/force level, and human--robot role.
+\end{block}
+\end{columns}
+\vspace{0.1cm}
+\centering\textbf{The same primitive can be reused across transport, insertion, and assembly.}
+\end{frame}
+
+\begin{frame}{The primitive model connects task reasoning to control}
 
 \centering
 \resizebox{0.94\textwidth}{!}{%
@@ -272,12 +300,12 @@ Focus on high-mix co-manipulation where full automation is brittle or expensive,
 \vspace{0.34cm}
 \begin{columns}[T,onlytextwidth]
 \column{0.48\textwidth}
-\begin{block}{Reusable vocabulary}
-Translate, rotate, hold, align, insert, and yield describe object-level motion and force patterns rather than task names.
+\begin{block}{Initial vocabulary and model size}
+Start with translate, rotate, hold, align, insert, and yield. Merge modes with similar motion/force responses; add a mode only when it improves prediction and control on held-out trials.
 \end{block}
 \column{0.48\textwidth}
-\begin{block}{Control-facing prediction}
-Given history, context, and a candidate robot action, predict the primitive transition, future object motion, and interaction wrench.
+\begin{block}{Control-facing input and output}
+Input: interaction history, task context, and a candidate robot action. Output: current/next primitive, future object motion, interaction wrench, and uncertainty.
 \end{block}
 \end{columns}
 \end{frame}
@@ -313,8 +341,8 @@ Given history, context, and a candidate robot action, predict the primitive tran
 \end{block}
 \end{columns}
 \vspace{0.25cm}
-\begin{alertblock}{Synchronization is part of the dataset}
-Store timestamps, calibrated coordinate frames, sensor uncertainty, and trial metadata; otherwise apparent human-response delay may be sensing or alignment error.
+\begin{alertblock}{Initial synchronization and fusion pipeline}
+Hardware timestamp/clock sync $\rightarrow$ resample on a common timeline $\rightarrow$ transform to calibrated frames $\rightarrow$ fuse asynchronous measurements with an uncertainty-aware state estimator (e.g., EKF or factor graph).
 \end{alertblock}
 \end{frame}
 
@@ -341,31 +369,30 @@ Transport may tolerate centimeter-level geometry; insertion may require millimet
 \end{block}
 \end{columns}
 \begin{alertblock}{Initial hardware principle}
-Time synchronization, latency, and calibration may matter more than resolution alone. Select numerical specifications only after defining the task envelope and closed-loop bandwidth.
+Instrument each independent interaction interface and safety-critical state; do not choose a fixed sensor count. Derive rate and resolution from the task and control bandwidth, while prioritizing synchronization, latency, and calibration.
 \end{alertblock}
 \end{frame}
 
-\begin{frame}{Large models propose; model-based control verifies}
+\begin{frame}{The hybrid twin core combines four complementary models}
 \begin{columns}[T,onlytextwidth]
-\column{0.31\textwidth}
-\begin{block}{VLM/VLA layer}
-Understand the scene, extract task constraints, and propose primitive sequences or candidate actions.
+\column{0.48\textwidth}
+\begin{block}{Physics and contact dynamics}
+Predict shared-object motion and interaction force under robot and human inputs while enforcing known geometry and mechanics.
 \end{block}
-\column{0.31\textwidth}
-\begin{block}{Digital-twin layer}
-Roll out candidate actions through physical dynamics and the primitive-conditioned human response model.
+\begin{block}{Online system identification}
+Update uncertain mass, inertia, damping, contact, payload, and actuator parameters from synchronized measurements.
 \end{block}
-\column{0.31\textwidth}
-\begin{block}{Control layer}
-Execute with MPC/MPPI and impedance or admittance control; adapt uncertain physical parameters online.
+\column{0.48\textwidth}
+\begin{block}{Human primitive and response model}
+Estimate the current primitive and predict human/object responses conditioned on each candidate robot action.
+\end{block}
+\begin{block}{Learned residual and uncertainty}
+Capture behavior not explained by the structured models and report confidence for risk-aware planning and fallback.
 \end{block}
 \end{columns}
-\vspace{0.3cm}
-\begin{alertblock}{Where the theoretical guarantee belongs}
-An independent safety layer enforces force, velocity, collision, workspace, and actuator constraints using passivity, robust/adaptive control, control barrier functions, or a safety filter.
+\begin{alertblock}{Interfaces outside the core}
+VLM/VLA interprets the task and proposes primitive sequences; MPC, MPPI, or N-PACE evaluates twin rollouts; an independent safety layer enforces physical constraints before execution.
 \end{alertblock}
-\vspace{0.12cm}
-\centering\textbf{The guarantee applies to the closed-loop architecture, not to the large model alone.}
 \end{frame}
 
 \begin{frame}{Three work packages define a realistic one-year plan}
@@ -401,26 +428,41 @@ WP1 and WP2 are the primary one-year outcomes; WP3 is staged from a structured p
 \end{alertblock}
 \end{frame}
 
-\begin{frame}{Clear ownership can connect control, HRI, and learning expertise}
+\begin{frame}{Project ownership can connect control, HRI, and learning}
 \begin{columns}[T,onlytextwidth]
 \column{0.48\textwidth}
-\begin{block}{Proposed collaboration}
-\begin{itemize}
-  \item \textbf{My focus:} dynamics, identification, adaptive/safe control, and hardware integration.
-  \item \textbf{HRI PhD collaborators:} study design, human factors, and participant evaluation.
-  \item \textbf{Joint work:} primitives, data, response modeling, and closed-loop experiments.
-\end{itemize}
+\begin{block}{My control and systems focus}
+Digital-twin architecture, synchronization and identification, adaptive/safe control, hardware integration, and closed-loop validation.
+\end{block}
+\begin{block}{Learning collaboration}
+Multimodal state estimation, human-response/world models, uncertainty estimation, and VLM/VLA interfaces.
 \end{block}
 \column{0.48\textwidth}
-\begin{block}{Decisions for this discussion}
-\begin{enumerate}
-  \item Which factory task is the first benchmark?
-  \item Which robot, force/torque sensors, cameras, and simulation assets are available?
-  \item Which students, existing models, and paper target should define the first milestone?
-\end{enumerate}
+\begin{block}{HRI PhD collaboration}
+Primitive and role definitions, study protocol, human-centered measures, participant evaluation, and behavior interpretation.
+\end{block}
+\begin{block}{Shared experimental work}
+Sensor setup, synchronized data collection, benchmark design, model comparison, and physical closed-loop experiments.
 \end{block}
 \end{columns}
-\vspace{0.25cm}
+% Original pink comment: Based on the foreseeable tasks, explain potential collaborations with the
+% PI's PhD students.
+% Assistant response: The collaboration slide now maps concrete project ownership to control/system
+% integration, HRI primitive and human-study design, learning models/VLM interfaces, and shared data
+% collection and closed-loop evaluation.
+\end{frame}
+
+\begin{frame}{Four decisions can define the first joint milestone}
+\begin{enumerate}
+  \item \textbf{Benchmark task:} Which factory co-manipulation task should be modeled first?
+  \vspace{0.16cm}
+  \item \textbf{Starting assets:} Which robot, sensors, simulation models, datasets, and controllers are already available?
+  \vspace{0.16cm}
+  \item \textbf{Team interface:} Which students and existing projects should each work package build on?
+  \vspace{0.16cm}
+  \item \textbf{Paper target:} Should the first milestone emphasize the testbed/dataset, primitive human model, or safe closed-loop control?
+\end{enumerate}
+\vspace{0.28cm}
 \begin{alertblock}{Proposed working cadence}
 Biweekly technical integration with collaborating students and a monthly milestone review across hardware, modeling, and control.
 \end{alertblock}
